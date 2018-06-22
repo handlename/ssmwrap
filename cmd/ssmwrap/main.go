@@ -10,12 +10,16 @@ import (
 )
 
 func main() {
-	var paths string
+	var (
+		paths  string
+		prefix string
+	)
 
 	flag.StringVar(&paths, "paths", "/", "comma separated parameter paths")
+	flag.StringVar(&prefix, "prefix", "", "prefix for environment variables")
 	flag.Parse()
 
-	if err := ssmwrap.Run(strings.Split(paths, ","), flag.Args()); err != nil {
+	if err := ssmwrap.Run(strings.Split(paths, ","), prefix, flag.Args()); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}

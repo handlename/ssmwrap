@@ -13,13 +13,13 @@ import (
 	"github.com/pkg/errors"
 )
 
-func Run(paths, command []string) error {
+func Run(paths []string, prefix string, command []string) error {
 	parameters, err := fetchParameters(paths)
 	if err != nil {
 		return errors.Wrap(err, "failed to fetch parameters from SSM")
 	}
 
-	envVars := prepareEnvVars(parameters)
+	envVars := prepareEnvVars(parameters, prefix)
 	envVars = append(envVars, os.Environ()...)
 
 	if err := runCommand(command, envVars); err != nil {
@@ -75,12 +75,13 @@ func fetchParameters(paths []string) (map[string]string, error) {
 
 // prepareEnvironmentVariables transform SSM parameters to environment variables like `FOO=bar`
 // Tha last parts of parameter name separated by `/` will be used.
-func prepareEnvVars(parameters map[string]string) []string {
+// `prefix` will append to head of name of environment variables.
+func prepareEnvVars(parameters map[string]string, prefix string) []string {
 	envVars := []string{}
 
 	for name, value := range parameters {
 		parts := strings.Split(name, "/")
-		key := strings.ToUpper(parts[len(parts)-1])
+		key := strings.ToUpper(prefix + parts[len(parts)-1])
 		envVars = append(envVars, fmt.Sprintf("%s=%s", key, value))
 	}
 
