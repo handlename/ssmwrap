@@ -12,8 +12,14 @@ jobs:
       - checkout
       - restore_cache:
           key: go-packages-{{ checksum "Gopkg.lock" }}
+      - run: mkdir -p $TEST_RESULTS
+      - run: go get github.com/jstemmer/go-junit-report
       - run: dep ensure
-      - run: go test -v .
+      - run:
+          name: run test
+          command: |
+            trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
+            go test -v . | tee ${TEST_RESULTS}/go-test.out
       - save_cache:
           key: go-packages-{{ checksum "Gopkg.lock" }}
           paths:
