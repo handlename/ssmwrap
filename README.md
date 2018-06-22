@@ -11,7 +11,7 @@ $ ssmwrap -paths /production -- your_command
 ## Install
 
 ```console
-$ go get github.com/handlename/ssmwrap
+$ go get github.com/handlename/ssmwrap/cmd/ssmwrap
 ```
 
 ## Licence
