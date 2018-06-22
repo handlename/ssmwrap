@@ -23,7 +23,7 @@ jobs:
             trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
             go test -v . | tee ${TEST_RESULTS}/go-test.out
       - store_test_results:
-          path: $TEST_RESULTS
+          path: /tmp/test-results
       - save_cache:
           key: go-packages-{{ checksum "Gopkg.lock" }}
           paths:
