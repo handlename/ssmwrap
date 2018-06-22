@@ -8,6 +8,8 @@ jobs:
       - image: circleci/golang:1.9
 
     working_directory: /go/src/github.com/handlename/ssmwrap
+    environment:
+      - TEST_RESULTS: /tmp/test-results
     steps:
       - checkout
       - restore_cache:
@@ -20,6 +22,8 @@ jobs:
           command: |
             trap "go-junit-report <${TEST_RESULTS}/go-test.out > ${TEST_RESULTS}/go-test-report.xml" EXIT
             go test -v . | tee ${TEST_RESULTS}/go-test.out
+      - store_test_results:
+          path: $TEST_RESULTS
       - save_cache:
           key: go-packages-{{ checksum "Gopkg.lock" }}
           paths:
