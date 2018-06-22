@@ -3,7 +3,7 @@
 # Check https://circleci.com/docs/2.0/language-go/ for more details
 version: 2
 jobs:
-  build:
+  test:
     docker:
       # specify the version
       - image: circleci/golang:1.9
@@ -15,3 +15,9 @@ jobs:
       # specify any bash command here prefixed with `run: `
       - run: dep ensure
       - run: go test -v .
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test
