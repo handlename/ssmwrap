@@ -20,6 +20,7 @@ func Run(paths, command []string) error {
 	}
 
 	envVars := prepareEnvVars(parameters)
+	envVars = append(envVars, os.Environ()...)
 
 	if err := runCommand(command, envVars); err != nil {
 		return errors.Wrapf(err, "failed to run command %+s", command)
@@ -75,7 +76,7 @@ func fetchParameters(paths []string) (map[string]string, error) {
 // prepareEnvironmentVariables transform SSM parameters to environment variables like `FOO=bar`
 // Tha last parts of parameter name separated by `/` will be used.
 func prepareEnvVars(parameters map[string]string) []string {
-	envVars := os.Environ()
+	envVars := []string{}
 
 	for name, value := range parameters {
 		parts := strings.Split(name, "/")
