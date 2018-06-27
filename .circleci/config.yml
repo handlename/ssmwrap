@@ -28,9 +28,37 @@ jobs:
           key: go-packages-{{ checksum "Gopkg.lock" }}
           paths:
             - vendor
+  upload:
+    docker:
+      - image: circleci/golang:1.9
+
+    working_directory: /go/src/github.com/handlename/ssmwrap
+    steps:
+      - checkout
+      - restore_cache:
+          key: go-packages-{{ checksum "Gopkg.lock" }}
+      - run: go get github.com/Songmu/goxz/cmd/goxz
+      - run: go get github.com/tcnksm/ghr
+      - run: dep ensure
+      - run: make upload
+      - save_cache:
+          key: go-packages-{{ checksum "Gopkg.lock" }}
+          paths:
+            - vendor
 
 workflows:
   version: 2
   test:
     jobs:
       - test
+
+  upload:
+    jobs:
+      - upload:
+          filters:
+            branches:
+              ignore:
+                - /.*/
+            tags:
+              only:
+                - /v[0-9]+\.[0-9]+\.[0-9]+/
