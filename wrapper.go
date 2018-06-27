@@ -20,7 +20,10 @@ func Run(paths []string, prefix string, command []string) error {
 	}
 
 	envVars := prepareEnvVars(parameters, prefix)
-	envVars = append(envVars, os.Environ()...)
+
+	// ssm parameters takes precedence over the current environment variables.
+	// In otehr words, ssm parameters overwrite the current environment variables.
+	envVars = append(os.Environ(), envVars...)
 
 	if err := runCommand(command, envVars); err != nil {
 		return errors.Wrapf(err, "failed to run command %+s", command)
