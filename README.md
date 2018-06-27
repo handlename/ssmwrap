@@ -1,5 +1,7 @@
 # ssmwrap
 
+[![CircleCI](https://circleci.com/gh/handlename/ssmwrap.svg?style=svg)](https://circleci.com/gh/handlename/ssmwrap)
+
 ssmwrap execute commands with environment variables loaded from AWS SSM Parameter Store.
 
 ## Usage
