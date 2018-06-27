@@ -16,6 +16,14 @@ $ ssmwrap -paths /production -- your_command
 $ go get github.com/handlename/ssmwrap/cmd/ssmwrap
 ```
 
+## Motivation
+
+There are some tools to use values stored in AWS System Manager Parameter Store,
+but I couldn't find that manipulate values including newline characters correctly.
+
+ssmwrap runs your command through syscall.Exec, not via shell,
+so newline characters are treated as part of a environment value.
+
 ## Licence
 
 MIT
