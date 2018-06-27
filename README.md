@@ -28,6 +28,10 @@ so newline characters are treated as part of a environment value.
 
 MIT
 
+## Special Thanks
+
+@fujiwara has gave me an idea of ssmwrap.
+
 ## Author
 
 @handlename (https://github.com/handlename)
