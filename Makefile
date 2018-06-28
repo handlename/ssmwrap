@@ -3,7 +3,7 @@ PROJECT_USERNAME=handlename
 PROJECT_REPONAME=ssmwrap
 
 cmd/ssmwrap/ssmwrap: *.go */**/*.go
-	go build -v -ldflags '-X main.version=$(VERSION)' -o $@ cmd/ssmwrap/main.go
+	CGO_ENABLED=0 go build -v -ldflags '-X main.version=$(VERSION)' -o $@ cmd/ssmwrap/main.go
 
 .PHONY: tag
 tag:
@@ -24,7 +24,7 @@ dist:
 
 .PHONY: upload
 upload: dist
-	ghr \
+	CGO_ENABLED=0 ghr \
 	  -u '$(PROJECT_USERNAME)' \
 	  -r '$(PROJECT_REPONAME)' \
 	  -prerelease \
