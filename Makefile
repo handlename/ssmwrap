@@ -1,6 +1,7 @@
 VERSION=${shell cat ./VERSION}
 PROJECT_USERNAME=handlename
 PROJECT_REPONAME=ssmwrap
+DIST_DIR=dist
 
 cmd/ssmwrap/ssmwrap: *.go */**/*.go
 	CGO_ENABLED=0 go build -v -ldflags '-X main.version=$(VERSION)' -o $@ cmd/ssmwrap/main.go
@@ -19,18 +20,19 @@ dist:
 	  -build-ldflags '-X main.version=$(VERSION)' \
 	  -os='linux,darwin,windows' \
 	  -arch='386,amd64' \
-	  -d dist \
+	  -d $(DIST_DIR) \
 	  ./cmd/ssmwrap
 
 .PHONY: upload
 upload: dist
+	mkdir -p $(DIST_DIR)
 	CGO_ENABLED=0 ghr \
 	  -u '$(PROJECT_USERNAME)' \
 	  -r '$(PROJECT_REPONAME)' \
 	  -prerelease \
 	  -replace \
 	  'v$(VERSION)' \
-	  dist
+	  $(DIST_DIR)
 
 clean:
-	rm -rf cmd/ssmwrap/ssmwrap dist/*
+	rm -rf cmd/ssmwrap/ssmwrap $(DIST_DIR)/*
