@@ -13,7 +13,7 @@ tag:
 	git push --tags
 
 .PHONY: dist
-dist:
+dist: clean
 	goxz \
 	  -pv 'v$(VERSION)' \
 	  -n ssmwrap \
