@@ -13,8 +13,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-func Run(paths []string, prefix string, command []string) error {
-	parameters, err := fetchParameters(paths)
+func Run(paths []string, prefix string, retries int, command []string) error {
+	parameters, err := fetchParameters(paths, retries)
 	if err != nil {
 		return errors.Wrap(err, "failed to fetch parameters from SSM")
 	}
@@ -32,7 +32,7 @@ func Run(paths []string, prefix string, command []string) error {
 	return nil
 }
 
-func fetchParameters(paths []string) (map[string]string, error) {
+func fetchParameters(paths []string, retries int) (map[string]string, error) {
 	params := map[string]string{}
 
 	sess, err := session.NewSession()
@@ -40,7 +40,12 @@ func fetchParameters(paths []string) (map[string]string, error) {
 		return params, errors.Wrap(err, "failed to start session")
 	}
 
-	client := ssm.New(sess)
+	// config.MaxRetries is defaults to -1
+	if retries <= 0 {
+		retries = -1
+	}
+
+	client := ssm.New(sess, aws.NewConfig().WithMaxRetries(retries))
 
 	for _, path := range paths {
 		nextToken := ""

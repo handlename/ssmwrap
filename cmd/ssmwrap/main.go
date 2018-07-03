@@ -15,11 +15,13 @@ func main() {
 	var (
 		paths       string
 		prefix      string
+		retries     int
 		versionFlag bool
 	)
 
 	flag.StringVar(&paths, "paths", "/", "comma separated parameter paths")
 	flag.StringVar(&prefix, "prefix", "", "prefix for environment variables")
+	flag.IntVar(&retries, "retries", 0, "number of times of retry")
 	flag.BoolVar(&versionFlag, "version", false, "display version")
 	flag.Parse()
 
@@ -28,7 +30,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	if err := ssmwrap.Run(strings.Split(paths, ","), prefix, flag.Args()); err != nil {
+	if err := ssmwrap.Run(strings.Split(paths, ","), prefix, retries, flag.Args()); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
