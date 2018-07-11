@@ -14,7 +14,7 @@ tag:
 
 .PHONY: dist
 dist: clean
-	goxz \
+	CGO_ENABLED=0 goxz \
 	  -pv 'v$(VERSION)' \
 	  -n ssmwrap \
 	  -build-ldflags '-X main.version=$(VERSION)' \
@@ -26,7 +26,7 @@ dist: clean
 .PHONY: upload
 upload: dist
 	mkdir -p $(DIST_DIR)
-	CGO_ENABLED=0 ghr \
+	ghr \
 	  -u '$(PROJECT_USERNAME)' \
 	  -r '$(PROJECT_REPONAME)' \
 	  -prerelease \
