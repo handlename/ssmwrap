@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.3.0
+## 0.3.1 (2018-07-11)
+
+- build without cgo. 0.2.1 is not worked...
+
+## 0.3.0 (2018-07-04)
 
 - added -retries flag
 
