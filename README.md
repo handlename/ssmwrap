@@ -16,6 +16,42 @@ $ ssmwrap -paths /production -- your_command
 $ go get github.com/handlename/ssmwrap/cmd/ssmwrap
 ```
 
+## Options
+
+```console
+$ ssmwrap -help
+Usage of ./cmd/ssmwrap/ssmwrap:
+  -paths string
+    	comma separated parameter paths (default "/")
+  -prefix string
+    	prefix for environment variables
+  -retries int
+    	number of times of retry
+  -version
+    	display version
+```
+
+### Environment Variables
+
+All of command line options can be set via environment variables.
+
+```console
+$ SSMWRAP_PATHS=/production ssmwrap ...
+```
+
+means,
+
+```console
+$ ssmwrap -paths /production ...
+```
+
+If there are command line options too, these takes priority.
+
+```console
+$ SSMWRAP_PREFIX=FOO_ ssmwrap -prefix BAR_ env
+BAR_SOMETHING=...
+```
+
 ## Motivation
 
 There are some tools to use values stored in AWS System Manager Parameter Store,
