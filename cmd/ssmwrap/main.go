@@ -23,6 +23,12 @@ func main() {
 	flag.StringVar(&prefix, "prefix", "", "prefix for environment variables")
 	flag.IntVar(&retries, "retries", 0, "number of times of retry")
 	flag.BoolVar(&versionFlag, "version", false, "display version")
+	flag.VisitAll(func(f *flag.Flag) {
+		// read flag values also from environment variable e.g. SSMWRAP_PATHS
+		if s := os.Getenv("SSMWRAP_" + strings.ToUpper(f.Name)); s != "" {
+			f.Value.Set(s)
+		}
+	})
 	flag.Parse()
 
 	if versionFlag {
