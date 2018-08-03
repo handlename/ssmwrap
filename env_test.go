@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestPrepareEnvVars(t *testing.T) {
+func TestFormatParametersAsEnvVars(t *testing.T) {
 	patterns := []struct {
 		Title           string
 		InputParameters map[string]string
@@ -55,7 +55,7 @@ func TestPrepareEnvVars(t *testing.T) {
 	for _, pattern := range patterns {
 		t.Log(pattern.Title)
 
-		envVars := prepareEnvVars(pattern.InputParameters, pattern.InputPrefix)
+		envVars := formatParametersAsEnvVars(pattern.InputParameters, pattern.InputPrefix)
 
 		if !reflect.DeepEqual(envVars, pattern.Expected) {
 			t.Errorf("unexpected envVars: %+v", envVars)
