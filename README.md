@@ -2,7 +2,11 @@
 
 [![CircleCI](https://circleci.com/gh/handlename/ssmwrap.svg?style=svg)](https://circleci.com/gh/handlename/ssmwrap)
 
-ssmwrap execute commands with environment variables loaded from AWS SSM Parameter Store.
+ssmwrap execute commands with output values loaded from AWS SSM Parameter Store to somewhere.
+
+Supported output targets:
+
+- environment variables
 
 ## Usage
 
@@ -21,10 +25,16 @@ $ go get github.com/handlename/ssmwrap/cmd/ssmwrap
 ```console
 $ ssmwrap -help
 Usage of ./cmd/ssmwrap/ssmwrap:
+  -env
+    	export values as environment variables (default true)
+  -env-prefix string
+    	prefix for environment variables
+  -no-env
+    	disable export to environment variables
   -paths string
     	comma separated parameter paths (default "/")
   -prefix string
-    	prefix for environment variables
+    	alias for -env-prefix
   -retries int
     	number of times of retry
   -version
