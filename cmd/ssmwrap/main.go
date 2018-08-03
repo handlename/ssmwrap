@@ -13,15 +13,24 @@ var version string
 
 func main() {
 	var (
-		paths       string
-		prefix      string
-		retries     int
+		paths   string
+		retries int
+
+		envOutputFlag   bool
+		envNoOutputFlag bool
+		envPrefix       string
+
 		versionFlag bool
 	)
 
 	flag.StringVar(&paths, "paths", "/", "comma separated parameter paths")
-	flag.StringVar(&prefix, "prefix", "", "prefix for environment variables")
 	flag.IntVar(&retries, "retries", 0, "number of times of retry")
+
+	flag.BoolVar(&envOutputFlag, "env", true, "export values as environment variables")
+	flag.BoolVar(&envNoOutputFlag, "no-env", false, "disable export to environment variables")
+	flag.StringVar(&envPrefix, "env-prefix", "", "prefix for environment variables")
+	flag.StringVar(&envPrefix, "prefix", "", "alias for -env-prefix")
+
 	flag.BoolVar(&versionFlag, "version", false, "display version")
 	flag.VisitAll(func(f *flag.Flag) {
 		// read flag values also from environment variable e.g. SSMWRAP_PATHS
@@ -37,10 +46,11 @@ func main() {
 	}
 
 	options := ssmwrap.Options{
-		Paths:   strings.Split(paths, ","),
-		Prefix:  prefix,
-		Retries: retries,
-		Command: flag.Args(),
+		Paths:     strings.Split(paths, ","),
+		EnvOutput: !envNoOutputFlag,
+		EnvPrefix: envPrefix,
+		Retries:   retries,
+		Command:   flag.Args(),
 	}
 
 	if err := ssmwrap.Run(options); err != nil {

@@ -21,8 +21,11 @@ type Options struct {
 	// Retry limit to request to SSM.
 	Retries int
 
+	// Output values to environment variables.
+	EnvOutput bool
+
 	// Prefix for name of exported environment variables.
-	Prefix string
+	EnvPrefix string
 
 	// Command and arguments to run.
 	Command []string
@@ -34,7 +37,11 @@ func Run(options Options) error {
 		return errors.Wrap(err, "failed to fetch parameters from SSM")
 	}
 
-	envVars := prepareEnvVars(parameters, options.Prefix)
+	envVars := []string{}
+
+	if options.EnvOutput {
+		envVars = prepareEnvVars(parameters, options.EnvPrefix)
+	}
 
 	// ssm parameters takes precedence over the current environment variables.
 	// In otehr words, ssm parameters overwrite the current environment variables.
