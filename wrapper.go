@@ -13,20 +13,35 @@ import (
 	"github.com/pkg/errors"
 )
 
-func Run(paths []string, prefix string, retries int, command []string) error {
-	parameters, err := fetchParameters(paths, retries)
+type Options struct {
+	// Paths is target paths on SSM Parameter Store.
+	// If there are multiple paths, all of related values will be loaded.
+	Paths []string
+
+	// Retry limit to request to SSM.
+	Retries int
+
+	// Prefix for name of exported environment variables.
+	Prefix string
+
+	// Command and arguments to run.
+	Command []string
+}
+
+func Run(options Options) error {
+	parameters, err := fetchParameters(options.Paths, options.Retries)
 	if err != nil {
 		return errors.Wrap(err, "failed to fetch parameters from SSM")
 	}
 
-	envVars := prepareEnvVars(parameters, prefix)
+	envVars := prepareEnvVars(parameters, options.Prefix)
 
 	// ssm parameters takes precedence over the current environment variables.
 	// In otehr words, ssm parameters overwrite the current environment variables.
 	envVars = append(os.Environ(), envVars...)
 
-	if err := runCommand(command, envVars); err != nil {
-		return errors.Wrapf(err, "failed to run command %+s", command)
+	if err := runCommand(options.Command, envVars); err != nil {
+		return errors.Wrapf(err, "failed to run command %+s", options.Command)
 	}
 
 	return nil

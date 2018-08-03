@@ -36,7 +36,14 @@ func main() {
 		os.Exit(0)
 	}
 
-	if err := ssmwrap.Run(strings.Split(paths, ","), prefix, retries, flag.Args()); err != nil {
+	options := ssmwrap.Options{
+		Paths:   strings.Split(paths, ","),
+		Prefix:  prefix,
+		Retries: retries,
+		Command: flag.Args(),
+	}
+
+	if err := ssmwrap.Run(options); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
