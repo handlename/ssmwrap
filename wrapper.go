@@ -1,10 +1,7 @@
 package ssmwrap
 
 import (
-	"fmt"
-	"os"
 	"os/exec"
-	"strings"
 	"syscall"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -38,14 +35,9 @@ func Run(options Options) error {
 	}
 
 	envVars := []string{}
-
 	if options.EnvOutput {
 		envVars = prepareEnvVars(parameters, options.EnvPrefix)
 	}
-
-	// ssm parameters takes precedence over the current environment variables.
-	// In otehr words, ssm parameters overwrite the current environment variables.
-	envVars = append(os.Environ(), envVars...)
 
 	if err := runCommand(options.Command, envVars); err != nil {
 		return errors.Wrapf(err, "failed to run command %+s", options.Command)
@@ -101,21 +93,6 @@ func fetchParameters(paths []string, retries int) (map[string]string, error) {
 	}
 
 	return params, nil
-}
-
-// prepareEnvironmentVariables transform SSM parameters to environment variables like `FOO=bar`
-// Tha last parts of parameter name separated by `/` will be used.
-// `prefix` will append to head of name of environment variables.
-func prepareEnvVars(parameters map[string]string, prefix string) []string {
-	envVars := []string{}
-
-	for name, value := range parameters {
-		parts := strings.Split(name, "/")
-		key := strings.ToUpper(prefix + parts[len(parts)-1])
-		envVars = append(envVars, fmt.Sprintf("%s=%s", key, value))
-	}
-
-	return envVars
 }
 
 func runCommand(command, envVars []string) error {
