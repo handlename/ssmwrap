@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 // prepareEnvironmentVariables transform SSM parameters to environment variables like `FOO=bar`
@@ -29,4 +31,17 @@ func formatParametersAsEnvVars(parameters map[string]string, prefix string) []st
 	}
 
 	return envVars
+}
+
+func export(envVars []string) error {
+	for _, v := range envVars {
+		parts := strings.SplitN(v, "=", 2)
+		if len(parts) != 2 {
+			return errors.New("= is not contained in envvars")
+		}
+		if err := os.Setenv(parts[0], parts[1]); err != nil {
+			return errors.Wrap(err, "setenv failed")
+		}
+	}
+	return nil
 }
