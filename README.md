@@ -70,6 +70,22 @@ but I couldn't find that manipulate values including newline characters correctl
 ssmwrap runs your command through syscall.Exec, not via shell,
 so newline characters are treated as part of a environment value.
 
+## Usage as a library
+
+`ssmwrap.Export()` fetches parameters from SSM and export those to envrionment variables.
+
+```go
+err := ssmwrap.Export(ssmwrap.Options{
+	Paths: []string{"/path/"},
+	Retries: 3,
+	EnvPrefix: "SSM_",
+})
+if err != nil {
+	// ...
+}
+foo := os.Getenv("SSM_FOO")  // a value of /path/foo in SSM
+```
+
 ## Licence
 
 MIT
