@@ -1,6 +1,6 @@
 # ssmwrap
 
-[![CircleCI](https://circleci.com/gh/handlename/ssmwrap.svg?style=svg)](https://circleci.com/gh/handlename/ssmwrap)
+[![CircleCI](https://circleci.com/gh/handlename/ssmwrap.svg?style=svg)](https://circleci.com/gh/handlename/ssmwrap) [![Documentation](https://godoc.org/github.com/handlename/ssmwrap?status.svg)](https://godoc.org/github.com/handlename/ssmwrap)
 
 ssmwrap execute commands with output values loaded from AWS SSM Parameter Store to somewhere.
 
