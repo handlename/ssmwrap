@@ -14,18 +14,18 @@ func TestFormatParametersAsEnvVars(t *testing.T) {
 		Expected        []string
 	}{
 		{
-			Title: "to upper",
+			Title: "preserve lower case",
 			InputParameters: map[string]string{
 				"/foo": "bar",
 			},
 			Expected: []string{
-				"FOO=bar",
+				"foo=bar",
 			},
 		},
 		{
 			Title: "deep path",
 			InputParameters: map[string]string{
-				"/d/e/e/p/path": "deep",
+				"/d/e/e/p/PATH": "deep",
 			},
 			Expected: []string{
 				"PATH=deep",
@@ -38,17 +38,7 @@ func TestFormatParametersAsEnvVars(t *testing.T) {
 			},
 			InputPrefix: "MY_",
 			Expected: []string{
-				"MY_NAME=john",
-			},
-		},
-		{
-			Title: "prefix will be upper, too",
-			InputParameters: map[string]string{
-				"/common/title": "event",
-			},
-			InputPrefix: "my_",
-			Expected: []string{
-				"MY_TITLE=event",
+				"MY_name=john",
 			},
 		},
 	}
