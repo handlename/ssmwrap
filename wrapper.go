@@ -46,6 +46,18 @@ func Run(options Options) error {
 	return nil
 }
 
+// Export fetches paramters from SSM and export those to environment variables.
+// This is for use ssmwrap as a library.
+func Export(options Options) error {
+	parameters, err := fetchParameters(options.Paths, options.Retries)
+	if err != nil {
+		return errors.Wrap(err, "failed to fetch parameters from SSM")
+	}
+
+	envVars := formatParametersAsEnvVars(parameters, options.EnvPrefix)
+	return export(envVars)
+}
+
 func fetchParameters(paths []string, retries int) (map[string]string, error) {
 	params := map[string]string{}
 

@@ -1,6 +1,7 @@
 package ssmwrap
 
 import (
+	"os"
 	"reflect"
 	"testing"
 )
@@ -59,6 +60,37 @@ func TestFormatParametersAsEnvVars(t *testing.T) {
 
 		if !reflect.DeepEqual(envVars, pattern.Expected) {
 			t.Errorf("unexpected envVars: %+v", envVars)
+		}
+	}
+}
+
+func TestExport(t *testing.T) {
+	patterns := []struct {
+		Title    string
+		EnvVars  []string
+		Expected map[string]string
+	}{
+		{
+			Title:   "simple",
+			EnvVars: []string{"FOO=foo", "BAR=bar=baz"},
+			Expected: map[string]string{
+				"FOO": "foo",
+				"BAR": "bar=baz",
+			},
+		},
+	}
+
+	for _, pattern := range patterns {
+		t.Log(pattern.Title)
+
+		err := export(pattern.EnvVars)
+		if err != nil {
+			t.Error(err)
+		}
+		for key, value := range pattern.Expected {
+			if env := os.Getenv(key); env != value {
+				t.Errorf("unexpected env %s=%s (expected %s)", key, env, value)
+			}
 		}
 	}
 }
