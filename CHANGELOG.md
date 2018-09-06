@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.0 (2018-09-06)
+
+- add `-env`/`-no-env`/`-env-prefix` options #5
+- add library interface `Export` #6
+
 ## 0.4.0 (2018-07-13)
 
 - configurations via environment variables #4
