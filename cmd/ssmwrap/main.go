@@ -45,16 +45,22 @@ func main() {
 		os.Exit(0)
 	}
 
-	options := ssmwrap.Options{
-		Paths:     strings.Split(paths, ","),
-		EnvOutput: !envNoOutputFlag,
-		EnvPrefix: envPrefix,
-		Retries:   retries,
-		Command:   flag.Args(),
+	options := ssmwrap.RunOptions{
+		Paths:   strings.Split(paths, ","),
+		Retries: retries,
+		Command: flag.Args(),
 	}
 
-	if err := ssmwrap.Run(options); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+	ssm := ssmwrap.DefaultSSMConnector{}
+	dests := []ssmwrap.Destination{}
+
+	if !envNoOutputFlag {
+		dests = append(dests, ssmwrap.DestinationEnv{
+			Prefix: envPrefix,
+		})
+	}
+
+	if err := ssmwrap.Run(options, ssm, dests); err != nil {
+		fmt.Fprintf(os.Stderr, "%s", err)
 	}
 }
