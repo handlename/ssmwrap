@@ -13,7 +13,11 @@ type DestinationEnv struct {
 	Prefix string
 }
 
-func (d *DestinationEnv) Oputput(parameters map[string]string) error {
+func (d DestinationEnv) Name() string {
+	return "Env"
+}
+
+func (d DestinationEnv) Output(parameters map[string]string) error {
 	envVars := d.prepareEnvVars(parameters)
 	return d.export(envVars)
 }
@@ -21,7 +25,7 @@ func (d *DestinationEnv) Oputput(parameters map[string]string) error {
 // prepareEnvironmentVariables transform SSM parameters to environment variables like `FOO=bar`
 // Tha last parts of parameter name separated by `/` will be used.
 // `prefix` will append to head of name of environment variables.
-func (d *DestinationEnv) prepareEnvVars(parameters map[string]string) []string {
+func (d DestinationEnv) prepareEnvVars(parameters map[string]string) []string {
 	envVars := d.formatParametersAsEnvVars(parameters)
 
 	// ssm parameters takes precedence over the current environment variables.
@@ -31,7 +35,7 @@ func (d *DestinationEnv) prepareEnvVars(parameters map[string]string) []string {
 	return envVars
 }
 
-func (d *DestinationEnv) formatParametersAsEnvVars(parameters map[string]string) []string {
+func (d DestinationEnv) formatParametersAsEnvVars(parameters map[string]string) []string {
 	envVars := []string{}
 
 	for name, value := range parameters {
@@ -43,7 +47,7 @@ func (d *DestinationEnv) formatParametersAsEnvVars(parameters map[string]string)
 	return envVars
 }
 
-func (d *DestinationEnv) export(envVars []string) error {
+func (d DestinationEnv) export(envVars []string) error {
 	for _, v := range envVars {
 		parts := strings.SplitN(v, "=", 2)
 		if len(parts) != 2 {
