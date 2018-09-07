@@ -75,10 +75,10 @@ so newline characters are treated as part of a environment value.
 `ssmwrap.Export()` fetches parameters from SSM and export those to envrionment variables.
 
 ```go
-err := ssmwrap.Export(ssmwrap.Options{
+err := ssmwrap.Export(ssmwrap.ExportOptions{
 	Paths: []string{"/path/"},
 	Retries: 3,
-	EnvPrefix: "SSM_",
+	Prefix: "SSM_",
 })
 if err != nil {
 	// ...
