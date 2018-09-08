@@ -26,54 +26,50 @@ func (ts *FileTargets) String() string {
 }
 
 func (ts *FileTargets) Set(value string) error {
-	parsed := parseFileTarget(value)
+	parts := strings.Split(value, ",")
 
-	if parsed["Name"] == "" {
-		return fmt.Errorf("Name required")
-	}
+	target := ssmwrap.FileTarget{}
 
-	if parsed["Path"] == "" {
-		return fmt.Errorf("Path required")
-	}
+	for _, part := range parts {
+		param := strings.SplitN(part, "=", 2)
+		key := param[0]
+		value := param[1]
 
-	if parsed["Mode"] == "" {
-		return fmt.Errorf("Mode required")
-	}
-
-	// expand path
-	path, err := filepath.Abs(parsed["Path"])
-	if err != nil {
-		return fmt.Errorf("Invalid Path")
-	}
-
-	// convert `Mode` to os.FileMode
-	mode, err := strconv.ParseUint(parsed["Mode"], 8, 32)
-	if err != nil {
-		return fmt.Errorf("invalid Mode")
-	}
-
-	target := ssmwrap.FileTarget{
-		Name: parsed["Name"],
-		Path: path,
-		Mode: os.FileMode(mode),
-	}
-
-	if parsed["Uid"] != "" {
-		uid, err := strconv.Atoi(parsed["Uid"])
-		if err != nil {
-			return fmt.Errorf("invalid Uid")
+		switch key {
+		case "Name":
+			target.Name = value
+		case "Path":
+			path, err := ts.checkPath(value)
+			if err != nil {
+				return fmt.Errorf("invalid Path: %s", err)
+			}
+			target.Path = path
+		case "Mode":
+			mode, err := ts.checkMode(value)
+			if err != nil {
+				return fmt.Errorf("invalid Mode: %s", err)
+			}
+			target.Mode = mode
+		case "Uid":
+			uid, err := ts.checkUid(value)
+			if err != nil {
+				return fmt.Errorf("invalid Uid: %s", err)
+			}
+			target.Uid = uid
+		case "Gid":
+			gid, err := ts.checkGid(value)
+			if err != nil {
+				return fmt.Errorf("invalid Gid: %s", err)
+			}
+			target.Gid = gid
+		default:
+			return fmt.Errorf("unknown parameter: %s", key)
 		}
-
-		target.Uid = uid
 	}
 
-	if parsed["Gid"] != "" {
-		gid, err := strconv.Atoi(parsed["Gid"])
-		if err != nil {
-			return fmt.Errorf("invalid Gid")
-		}
-
-		target.Gid = gid
+	err := target.IsSatisfied()
+	if err != nil {
+		return fmt.Errorf("file parameter is not satisfied: %s", err)
 	}
 
 	*ts = append(*ts, target)
@@ -81,16 +77,42 @@ func (ts *FileTargets) Set(value string) error {
 	return nil
 }
 
-func parseFileTarget(value string) map[string]string {
-	parts := strings.Split(value, ",")
-	parsed := map[string]string{}
-
-	for _, part := range parts {
-		param := strings.SplitN(part, "=", 2)
-		parsed[param[0]] = param[1]
+func (ts FileTargets) checkPath(value string) (string, error) {
+	// expand path
+	path, err := filepath.Abs(value)
+	if err != nil {
+		return "", fmt.Errorf("Invalid Path")
 	}
 
-	return parsed
+	return path, nil
+}
+
+func (ts FileTargets) checkMode(value string) (os.FileMode, error) {
+	// convert `Mode` to os.FileMode
+	mode, err := strconv.ParseUint(value, 8, 32)
+	if err != nil {
+		return 0, fmt.Errorf("invalid Mode")
+	}
+
+	return os.FileMode(mode), nil
+}
+
+func (ts FileTargets) checkGid(value string) (int, error) {
+	gid, err := strconv.Atoi(value)
+	if err != nil {
+		return 0, fmt.Errorf("invalid Gid")
+	}
+
+	return gid, nil
+}
+
+func (ts FileTargets) checkUid(value string) (int, error) {
+	uid, err := strconv.Atoi(value)
+	if err != nil {
+		return 0, fmt.Errorf("invalid Uid")
+	}
+
+	return uid, nil
 }
 
 func main() {
