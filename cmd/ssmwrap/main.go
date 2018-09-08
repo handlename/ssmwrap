@@ -4,12 +4,86 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/handlename/ssmwrap"
 )
 
 var version string
+
+type FileTargets []ssmwrap.FileTarget
+
+func (ts *FileTargets) String() string {
+	s := ""
+
+	for _, t := range *ts {
+		s += t.String()
+	}
+
+	return s
+}
+
+func (ts *FileTargets) Set(value string) error {
+	parsed := parseFileTarget(value)
+
+	if parsed["Name"] == "" {
+		return fmt.Errorf("Name required")
+	}
+
+	if parsed["Path"] == "" {
+		return fmt.Errorf("Path required")
+	}
+
+	if parsed["Mode"] == "" {
+		return fmt.Errorf("Mode required")
+	}
+
+	mode, err := strconv.ParseUint(parsed["Mode"], 8, 32)
+	if err != nil {
+		return fmt.Errorf("invalid Mode")
+	}
+
+	target := ssmwrap.FileTarget{
+		Name: parsed["Name"],
+		Path: parsed["Path"],
+		Mode: os.FileMode(mode),
+	}
+
+	if parsed["Uid"] != "" {
+		uid, err := strconv.Atoi(parsed["Uid"])
+		if err != nil {
+			return fmt.Errorf("invalid Uid")
+		}
+
+		target.Uid = uid
+	}
+
+	if parsed["Gid"] != "" {
+		gid, err := strconv.Atoi(parsed["Gid"])
+		if err != nil {
+			return fmt.Errorf("invalid Gid")
+		}
+
+		target.Gid = gid
+	}
+
+	*ts = append(*ts, target)
+
+	return nil
+}
+
+func parseFileTarget(value string) map[string]string {
+	parts := strings.Split(value, ",")
+	parsed := map[string]string{}
+
+	for _, part := range parts {
+		param := strings.SplitN(part, "=", 2)
+		parsed[param[0]] = param[1]
+	}
+
+	return parsed
+}
 
 func main() {
 	var (
@@ -19,6 +93,8 @@ func main() {
 		envOutputFlag   bool
 		envNoOutputFlag bool
 		envPrefix       string
+
+		fileTargets FileTargets
 
 		versionFlag bool
 	)
@@ -30,6 +106,8 @@ func main() {
 	flag.BoolVar(&envNoOutputFlag, "no-env", false, "disable export to environment variables")
 	flag.StringVar(&envPrefix, "env-prefix", "", "prefix for environment variables")
 	flag.StringVar(&envPrefix, "prefix", "", "alias for -env-prefix")
+
+	flag.Var(&fileTargets, "file", "write values as file")
 
 	flag.BoolVar(&versionFlag, "version", false, "display version")
 	flag.VisitAll(func(f *flag.Flag) {
@@ -57,6 +135,12 @@ func main() {
 	if !envNoOutputFlag {
 		dests = append(dests, ssmwrap.DestinationEnv{
 			Prefix: envPrefix,
+		})
+	}
+
+	if 0 < len(fileTargets) {
+		dests = append(dests, ssmwrap.DestinationFile{
+			Targets: fileTargets,
 		})
 	}
 
