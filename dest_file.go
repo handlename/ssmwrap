@@ -1,6 +1,7 @@
 package ssmwrap
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -11,13 +12,7 @@ type DestinationFile struct {
 	Targets []FileTarget
 }
 
-type FileTarget struct {
-	Name string
-	Path string
-	Mode os.FileMode
-	Uid  int
-	Gid  int
-}
+// TODO: func NewFileTarget(...)
 
 func (d DestinationFile) Name() string {
 	return "File"
@@ -47,4 +42,16 @@ func (d DestinationFile) Output(parameters map[string]string) error {
 	}
 
 	return nil
+}
+
+type FileTarget struct {
+	Name string
+	Path string
+	Mode os.FileMode
+	Uid  int
+	Gid  int
+}
+
+func (t FileTarget) String() string {
+	return fmt.Sprintf("Name=%s,Path=%s,Mode=%d,Uid=%d,Gid=%d", t.Name, t.Path, t.Mode, t.Uid, t.Gid)
 }
