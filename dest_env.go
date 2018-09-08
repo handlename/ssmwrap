@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-// DestinationSSM is implementation of Destination interface.
+// DestinationEnv is an implementation of Destination interface.
 type DestinationEnv struct {
 	Prefix string
 }

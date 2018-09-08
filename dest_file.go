@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+// DestinationFile is an implementation of Destination interface.
 type DestinationFile struct {
 	Targets []FileTarget
 }
