@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -39,6 +40,13 @@ func (ts *FileTargets) Set(value string) error {
 		return fmt.Errorf("Mode required")
 	}
 
+	// expand path
+	path, err := filepath.Abs(parsed["Path"])
+	if err != nil {
+		return fmt.Errorf("Invalid Path")
+	}
+
+	// convert `Mode` to os.FileMode
 	mode, err := strconv.ParseUint(parsed["Mode"], 8, 32)
 	if err != nil {
 		return fmt.Errorf("invalid Mode")
@@ -46,7 +54,7 @@ func (ts *FileTargets) Set(value string) error {
 
 	target := ssmwrap.FileTarget{
 		Name: parsed["Name"],
-		Path: parsed["Path"],
+		Path: path,
 		Mode: os.FileMode(mode),
 	}
 
