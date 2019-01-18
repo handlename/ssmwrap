@@ -9,7 +9,7 @@ import (
 
 type DefaultSSMConnector struct{}
 
-func (c DefaultSSMConnector) FetchParameters(paths []string, retries int) (map[string]string, error) {
+func (c DefaultSSMConnector) FetchParameters(paths []string, recursive bool, retries int) (map[string]string, error) {
 	params := map[string]string{}
 
 	sess, err := session.NewSession()
@@ -30,7 +30,7 @@ func (c DefaultSSMConnector) FetchParameters(paths []string, retries int) (map[s
 		for {
 			input := &ssm.GetParametersByPathInput{
 				Path:           &path,
-				Recursive:      aws.Bool(true),
+				Recursive:      aws.Bool(recursive),
 				WithDecryption: aws.Bool(true),
 			}
 

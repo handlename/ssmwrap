@@ -139,8 +139,10 @@ func flagViaEnv(prefix string, multiple bool) []string {
 
 func main() {
 	var (
-		paths   string
-		retries int
+		paths           string
+		recursiveFlag   bool
+		noRecursiveFlag bool
+		retries         int
 
 		envOutputFlag   bool
 		envNoOutputFlag bool
@@ -152,6 +154,8 @@ func main() {
 	)
 
 	flag.StringVar(&paths, "paths", "/", "comma separated parameter paths")
+	flag.BoolVar(&recursiveFlag, "recursive", true, "retrieve values recursively")
+	flag.BoolVar(&noRecursiveFlag, "no-recursive", false, "retrieve values just under -paths only")
 	flag.IntVar(&retries, "retries", 0, "number of times of retry")
 
 	flag.BoolVar(&envOutputFlag, "env", true, "export values as environment variables")
@@ -183,9 +187,10 @@ func main() {
 	}
 
 	options := ssmwrap.RunOptions{
-		Paths:   strings.Split(paths, ","),
-		Retries: retries,
-		Command: flag.Args(),
+		Paths:     strings.Split(paths, ","),
+		Recursive: !noRecursiveFlag,
+		Retries:   retries,
+		Command:   flag.Args(),
 	}
 
 	ssm := ssmwrap.DefaultSSMConnector{}

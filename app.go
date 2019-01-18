@@ -9,7 +9,7 @@ import (
 )
 
 type SSMConnector interface {
-	FetchParameters(paths []string, retries int) (map[string]string, error)
+	FetchParameters(paths []string, recursive bool, retries int) (map[string]string, error)
 }
 
 type Destination interface {
@@ -22,6 +22,9 @@ type RunOptions struct {
 	// If there are multiple paths, all of related values will be loaded.
 	Paths []string
 
+	// Recursive tell ssmwrap to retrieve values from SSM recursively.
+	Recursive bool
+
 	// Retry limit to request to SSM.
 	Retries int
 
@@ -30,7 +33,7 @@ type RunOptions struct {
 }
 
 func Run(options RunOptions, ssm SSMConnector, dests []Destination) error {
-	parameters, err := ssm.FetchParameters(options.Paths, options.Retries)
+	parameters, err := ssm.FetchParameters(options.Paths, options.Recursive, options.Retries)
 	if err != nil {
 		return errors.Wrap(err, "failed to fetch parameters from SSM")
 	}
