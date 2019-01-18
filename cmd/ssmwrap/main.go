@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -115,6 +116,27 @@ func (ts FileTargets) checkUid(value string) (int, error) {
 	return uid, nil
 }
 
+func flagViaEnv(prefix string, multiple bool) []string {
+	if multiple {
+		values := []string{}
+
+		// read values named like `SSMWRAP_FOO_123`
+		re := regexp.MustCompile("^" + prefix + `(_\d+)?$`)
+
+		for _, env := range os.Environ() {
+			parts := strings.SplitN(env, "=", 2)
+
+			if re.FindString(parts[0]) != "" {
+				values = append(values, parts[1])
+			}
+		}
+
+		return values
+	}
+
+	return []string{os.Getenv(prefix)}
+}
+
 func main() {
 	var (
 		paths   string
@@ -142,8 +164,15 @@ func main() {
 	flag.BoolVar(&versionFlag, "version", false, "display version")
 	flag.VisitAll(func(f *flag.Flag) {
 		// read flag values also from environment variable e.g. SSMWRAP_PATHS
-		if s := os.Getenv("SSMWRAP_" + strings.ToUpper(f.Name)); s != "" {
-			f.Value.Set(s)
+
+		multiple := false
+
+		if f.Name == "file" {
+			multiple = true
+		}
+
+		for _, value := range flagViaEnv("SSMWRAP_"+strings.ToUpper(f.Name), multiple) {
+			f.Value.Set(value)
 		}
 	})
 	flag.Parse()
