@@ -1,9 +1,14 @@
 # Changelog
 
+## 0.6.0 (2019-01-18)
+
+- add `-file` option #1
+- add `-recursive`/`-no-recursive` options #11
+
 ## 0.5.0 (2018-09-06)
 
 - add `-env`/`-no-env`/`-env-prefix` options #5
-- add library interface `Export` #6
+- add library interface `Export` #7
 
 ## 0.4.0 (2018-07-13)
 
