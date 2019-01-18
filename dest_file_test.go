@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"path/filepath"
 )
 
 func TestDestinationFileOutputSuccessAll(t *testing.T) {
@@ -87,11 +88,10 @@ func TestDestinationFileOutputFailedToWrite(t *testing.T) {
 }
 
 func makeTempfileName(t *testing.T) string {
-	tmpfile, err := ioutil.TempFile("", "foo")
+	tmpdir, err := ioutil.TempDir("", "")
 	if err != nil {
-		t.Errorf("failed to create temp file: %s", err)
+		t.Errorf("failed to create temp dir: %s", err)
 	}
-	defer os.Remove(tmpfile.Name())
 
-	return tmpfile.Name()
+	return filepath.Join(tmpdir, "out")
 }
