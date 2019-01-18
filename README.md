@@ -31,6 +31,10 @@ Usage of ./cmd/ssmwrap/ssmwrap:
     	prefix for environment variables
   -no-env
     	disable export to environment variables
+  -file string
+      write values as files
+      format:  Name=VALUE_NAME,Path=FILE_PATH,Mode=FILE_MODE,Gid=FILE_GROUP_ID,Uid=FILE_USER_ID
+      example: Name=/foo/bar,Path=/etc/bar,Mode=600,Gid=123,Uid=456
   -paths string
     	comma separated parameter paths (default "/")
   -prefix string

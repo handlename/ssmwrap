@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestFormatParametersAsEnvVars(t *testing.T) {
+func TestDestinationEnvFormatParametersAsEnvVars(t *testing.T) {
 	patterns := []struct {
 		Title           string
 		InputParameters map[string]string
@@ -68,7 +68,7 @@ func TestFormatParametersAsEnvVars(t *testing.T) {
 	}
 }
 
-func TestExport(t *testing.T) {
+func TestDestinationEnvExport(t *testing.T) {
 	patterns := []struct {
 		Title    string
 		EnvVars  []string
