@@ -137,7 +137,7 @@ func main() {
 	flag.StringVar(&envPrefix, "env-prefix", "", "prefix for environment variables")
 	flag.StringVar(&envPrefix, "prefix", "", "alias for -env-prefix")
 
-	flag.Var(&fileTargets, "file", "write values as file")
+	flag.Var(&fileTargets, "file", "write values as file\nformat:  Name=VALUE_NAME,Path=FILE_PATH,Mode=FILE_MODE,Gid=FILE_GROUP_ID,Uid=FILE_USER_ID\nexample: Name=/foo/bar,Path=/etc/bar,Mode=600,Gid=123,Uid=456")
 
 	flag.BoolVar(&versionFlag, "version", false, "display version")
 	flag.VisitAll(func(f *flag.Flag) {
