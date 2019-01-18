@@ -5,9 +5,10 @@ import (
 )
 
 type ExportOptions struct {
-	Paths   []string
-	Prefix  string
-	Retries int
+	Paths     []string
+	Prefix    string
+	Recursive bool
+	Retries   int
 }
 
 // Export fetches paramters from SSM and export those to environment variables.
@@ -18,7 +19,7 @@ func Export(options ExportOptions) error {
 		Prefix: options.Prefix,
 	}
 
-	parameters, err := ssm.FetchParameters(options.Paths, options.Retries)
+	parameters, err := ssm.FetchParameters(options.Paths, options.Recursive, options.Retries)
 	if err != nil {
 		return errors.Wrap(err, "failed to fetch parameters from SSM")
 	}

@@ -29,16 +29,20 @@ Usage of ./cmd/ssmwrap/ssmwrap:
     	export values as environment variables (default true)
   -env-prefix string
     	prefix for environment variables
+  -file value
+    	write values as file
+    	format:  Name=VALUE_NAME,Path=FILE_PATH,Mode=FILE_MODE,Gid=FILE_GROUP_ID,Uid=FILE_USER_ID
+    	example: Name=/foo/bar,Path=/etc/bar,Mode=600,Gid=123,Uid=456
   -no-env
     	disable export to environment variables
-  -file string
-      write values as files
-      format:  Name=VALUE_NAME,Path=FILE_PATH,Mode=FILE_MODE,Gid=FILE_GROUP_ID,Uid=FILE_USER_ID
-      example: Name=/foo/bar,Path=/etc/bar,Mode=600,Gid=123,Uid=456
+  -no-recursive
+    	retrieve values just under -paths only
   -paths string
     	comma separated parameter paths (default "/")
   -prefix string
     	alias for -env-prefix
+  -recursive
+    	retrieve values recursively (default true)
   -retries int
     	number of times of retry
   -version
