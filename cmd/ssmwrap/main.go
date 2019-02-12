@@ -210,5 +210,6 @@ func main() {
 
 	if err := ssmwrap.Run(options, ssm, dests); err != nil {
 		fmt.Fprintf(os.Stderr, "%s", err)
+		os.Exit(1)
 	}
 }
