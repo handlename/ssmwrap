@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.0 (2019-02-12)
+
+- returns exit code 1 when error occurred #13
+
+## 0.6.0 (2019-01-18)
+
+- add `-file` option #9
+- add `-recursive`/`-no-recursive` options #12
+
 ## 0.5.0 (2018-09-06)
 
 - add `-env`/`-no-env`/`-env-prefix` options #5
