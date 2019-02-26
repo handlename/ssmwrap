@@ -140,6 +140,7 @@ func flagViaEnv(prefix string, multiple bool) []string {
 func main() {
 	var (
 		paths           string
+		names           string
 		recursiveFlag   bool
 		noRecursiveFlag bool
 		retries         int
@@ -153,7 +154,8 @@ func main() {
 		versionFlag bool
 	)
 
-	flag.StringVar(&paths, "paths", "/", "comma separated parameter paths")
+	flag.StringVar(&paths, "paths", "", "comma separated parameter paths")
+	flag.StringVar(&names, "names", "", "comma separated parameter names")
 	flag.BoolVar(&recursiveFlag, "recursive", true, "retrieve values recursively")
 	flag.BoolVar(&noRecursiveFlag, "no-recursive", false, "retrieve values just under -paths only")
 	flag.IntVar(&retries, "retries", 0, "number of times of retry")
@@ -187,10 +189,16 @@ func main() {
 	}
 
 	options := ssmwrap.RunOptions{
-		Paths:     strings.Split(paths, ","),
 		Recursive: !noRecursiveFlag,
 		Retries:   retries,
 		Command:   flag.Args(),
+	}
+
+	if paths != "" {
+		options.Paths = strings.Split(paths, ",")
+	}
+	if names != "" {
+		options.Names = strings.Split(names, ",")
 	}
 
 	ssm := ssmwrap.DefaultSSMConnector{}

@@ -5,11 +5,16 @@ import (
 	"os/exec"
 	"syscall"
 
+	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/pkg/errors"
 )
 
 type SSMConnector interface {
 	FetchParameters(paths []string, recursive bool, retries int) (map[string]string, error)
+	FetchParametersByNames(names []string, retries int) (map[string]string, error)
+
+	fetchParameters(client *ssm.SSM, paths []string, recursive bool) (map[string]string, error)
+	fetchParametersByNames(client *ssm.SSM, names []string) (map[string]string, error)
 }
 
 type Destination interface {
@@ -22,6 +27,9 @@ type RunOptions struct {
 	// If there are multiple paths, all of related values will be loaded.
 	Paths []string
 
+	// Names are names on SSM Parameter Store.
+	Names []string
+
 	// Recursive tell ssmwrap to retrieve values from SSM recursively.
 	Recursive bool
 
@@ -33,9 +41,30 @@ type RunOptions struct {
 }
 
 func Run(options RunOptions, ssm SSMConnector, dests []Destination) error {
-	parameters, err := ssm.FetchParameters(options.Paths, options.Recursive, options.Retries)
+	client, err := newSSMClient(options.Retries)
 	if err != nil {
-		return errors.Wrap(err, "failed to fetch parameters from SSM")
+		return err
+	}
+	parameters := map[string]string{}
+
+	{
+		p, err := ssm.fetchParameters(client, options.Paths, options.Recursive)
+		if err != nil {
+			return errors.Wrap(err, "failed to fetch parameters from SSM")
+		}
+		for key, value := range p {
+			parameters[key] = value
+		}
+	}
+
+	{
+		p, err := ssm.fetchParametersByNames(client, options.Names)
+		if err != nil {
+			return errors.Wrap(err, "failed to fetch parameters from SSM")
+		}
+		for key, value := range p {
+			parameters[key] = value
+		}
 	}
 
 	for _, dest := range dests {
