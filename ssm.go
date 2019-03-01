@@ -9,15 +9,7 @@ import (
 
 type DefaultSSMConnector struct{}
 
-func (c DefaultSSMConnector) FetchParameters(paths []string, recursive bool, retries int) (map[string]string, error) {
-	client, err := newSSMClient(retries)
-	if err != nil {
-		return nil, err
-	}
-	return c.fetchParameters(client, paths, recursive)
-}
-
-func (c DefaultSSMConnector) fetchParameters(client *ssm.SSM, paths []string, recursive bool) (map[string]string, error) {
+func (c DefaultSSMConnector) fetchParametersByPaths(client *ssm.SSM, paths []string, recursive bool) (map[string]string, error) {
 	params := map[string]string{}
 	if len(paths) == 0 {
 		return params, nil
@@ -55,14 +47,6 @@ func (c DefaultSSMConnector) fetchParameters(client *ssm.SSM, paths []string, re
 	}
 
 	return params, nil
-}
-
-func (c DefaultSSMConnector) FetchParametersByNames(names []string, retries int) (map[string]string, error) {
-	client, err := newSSMClient(retries)
-	if err != nil {
-		return nil, err
-	}
-	return c.fetchParametersByNames(client, paths)
 }
 
 func (c DefaultSSMConnector) fetchParametersByNames(client *ssm.SSM, names []string) (map[string]string, error) {

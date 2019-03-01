@@ -10,10 +10,7 @@ import (
 )
 
 type SSMConnector interface {
-	FetchParameters(paths []string, recursive bool, retries int) (map[string]string, error)
-	FetchParametersByNames(names []string, retries int) (map[string]string, error)
-
-	fetchParameters(client *ssm.SSM, paths []string, recursive bool) (map[string]string, error)
+	fetchParametersByPaths(client *ssm.SSM, paths []string, recursive bool) (map[string]string, error)
 	fetchParametersByNames(client *ssm.SSM, names []string) (map[string]string, error)
 }
 
@@ -48,7 +45,7 @@ func Run(options RunOptions, ssm SSMConnector, dests []Destination) error {
 	parameters := map[string]string{}
 
 	{
-		p, err := ssm.fetchParameters(client, options.Paths, options.Recursive)
+		p, err := ssm.fetchParametersByPaths(client, options.Paths, options.Recursive)
 		if err != nil {
 			return errors.Wrap(err, "failed to fetch parameters from SSM")
 		}

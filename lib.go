@@ -27,7 +27,7 @@ func Export(options ExportOptions) error {
 	}
 
 	{
-		p, err := ssm.fetchParameters(client, options.Paths, options.Recursive)
+		p, err := ssm.fetchParametersByPaths(client, options.Paths, options.Recursive)
 		if err != nil {
 			return errors.Wrap(err, "failed to fetch parameters from SSM")
 		}
