@@ -57,7 +57,7 @@ func (c DefaultSSMConnector) fetchParameters(client *ssm.SSM, paths []string, re
 	return params, nil
 }
 
-func (c DefaultSSMConnector) FetchParametersByNames(paths []string, retries int) (map[string]string, error) {
+func (c DefaultSSMConnector) FetchParametersByNames(names []string, retries int) (map[string]string, error) {
 	client, err := newSSMClient(retries)
 	if err != nil {
 		return nil, err
