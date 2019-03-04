@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0 (2019-03-04)
+
+- add `-names` option #14
+- remove public function `FetchParameters` and `FetchParametersByNames`
+
 ## 0.7.0 (2019-02-12)
 
 - returns exit code 1 when error occurred #13
