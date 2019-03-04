@@ -6,6 +6,7 @@ import (
 
 type ExportOptions struct {
 	Paths     []string
+	Names     []string
 	Prefix    string
 	Recursive bool
 	Retries   int
@@ -19,9 +20,30 @@ func Export(options ExportOptions) error {
 		Prefix: options.Prefix,
 	}
 
-	parameters, err := ssm.FetchParameters(options.Paths, options.Recursive, options.Retries)
+	parameters := map[string]string{}
+	client, err := newSSMClient(options.Retries)
 	if err != nil {
-		return errors.Wrap(err, "failed to fetch parameters from SSM")
+		return err
+	}
+
+	{
+		p, err := ssm.fetchParametersByPaths(client, options.Paths, options.Recursive)
+		if err != nil {
+			return errors.Wrap(err, "failed to fetch parameters from SSM")
+		}
+		for key, value := range p {
+			parameters[key] = value
+		}
+	}
+
+	{
+		p, err := ssm.fetchParametersByNames(client, options.Names)
+		if err != nil {
+			return errors.Wrap(err, "failed to fetch parameters from SSM")
+		}
+		for key, value := range p {
+			parameters[key] = value
+		}
 	}
 
 	envVars := dest.formatParametersAsEnvVars(parameters)

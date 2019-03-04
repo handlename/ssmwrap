@@ -33,12 +33,14 @@ Usage of ./cmd/ssmwrap/ssmwrap:
     	write values as file
     	format:  Name=VALUE_NAME,Path=FILE_PATH,Mode=FILE_MODE,Gid=FILE_GROUP_ID,Uid=FILE_USER_ID
     	example: Name=/foo/bar,Path=/etc/bar,Mode=600,Gid=123,Uid=456
+  -names string
+        comma separated parameter names
   -no-env
     	disable export to environment variables
   -no-recursive
     	retrieve values just under -paths only
   -paths string
-    	comma separated parameter paths (default "/")
+        comma separated parameter paths
   -prefix string
     	alias for -env-prefix
   -recursive

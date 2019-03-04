@@ -9,20 +9,11 @@ import (
 
 type DefaultSSMConnector struct{}
 
-func (c DefaultSSMConnector) FetchParameters(paths []string, recursive bool, retries int) (map[string]string, error) {
+func (c DefaultSSMConnector) fetchParametersByPaths(client *ssm.SSM, paths []string, recursive bool) (map[string]string, error) {
 	params := map[string]string{}
-
-	sess, err := session.NewSession()
-	if err != nil {
-		return params, errors.Wrap(err, "failed to start session")
+	if len(paths) == 0 {
+		return params, nil
 	}
-
-	// config.MaxRetries is defaults to -1
-	if retries <= 0 {
-		retries = -1
-	}
-
-	client := ssm.New(sess, aws.NewConfig().WithMaxRetries(retries))
 
 	for _, path := range paths {
 		nextToken := ""
@@ -56,4 +47,43 @@ func (c DefaultSSMConnector) FetchParameters(paths []string, recursive bool, ret
 	}
 
 	return params, nil
+}
+
+func (c DefaultSSMConnector) fetchParametersByNames(client *ssm.SSM, names []string) (map[string]string, error) {
+	params := map[string]string{}
+	if len(names) == 0 {
+		return params, nil
+	}
+
+	input := &ssm.GetParametersInput{
+		WithDecryption: aws.Bool(true),
+	}
+	for _, name := range names {
+		input.Names = append(input.Names, aws.String(name))
+	}
+
+	output, err := client.GetParameters(input)
+	if err != nil {
+		return params, errors.Wrap(err, "failed to GetParameters")
+	}
+
+	for _, param := range output.Parameters {
+		params[*param.Name] = *param.Value
+	}
+
+	return params, nil
+}
+
+func newSSMClient(retries int) (*ssm.SSM, error) {
+	sess, err := session.NewSession()
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to start session")
+	}
+
+	// config.MaxRetries is defaults to -1
+	if retries <= 0 {
+		retries = -1
+	}
+
+	return ssm.New(sess, aws.NewConfig().WithMaxRetries(retries)), nil
 }
