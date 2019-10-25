@@ -16,7 +16,6 @@ jobs:
           key: go-packages-{{ checksum "go.sum" }}
       - run: mkdir -p $TEST_RESULTS
       - run: go get github.com/jstemmer/go-junit-report
-      - run: dep ensure
       - run:
           name: run test
           command: |
@@ -39,7 +38,6 @@ jobs:
           key: go-packages-{{ checksum "go.sum" }}
       - run: go get github.com/Songmu/goxz/cmd/goxz
       - run: go get github.com/tcnksm/ghr
-      - run: dep ensure
       - run: make upload
       - save_cache:
           key: go-packages-{{ checksum "go.sum" }}
