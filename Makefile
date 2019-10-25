@@ -3,6 +3,8 @@ PROJECT_USERNAME=handlename
 PROJECT_REPONAME=ssmwrap
 DIST_DIR=dist
 
+export GO111MODULE := on
+
 cmd/ssmwrap/ssmwrap: *.go */**/*.go
 	CGO_ENABLED=0 go build -v -ldflags '-X main.version=$(VERSION)' -o $@ cmd/ssmwrap/main.go
 
