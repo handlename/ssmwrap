@@ -6,9 +6,9 @@ jobs:
   test:
     docker:
       - image: circleci/golang:1.9
-
     working_directory: /go/src/github.com/handlename/ssmwrap
     environment:
+      - GO111MODULE: 'on'
       - TEST_RESULTS: /tmp/test-results
     steps:
       - checkout
@@ -30,8 +30,9 @@ jobs:
   upload:
     docker:
       - image: circleci/golang:1.9
-
     working_directory: /go/src/github.com/handlename/ssmwrap
+    environment:
+      - GO111MODULE: 'on'
     steps:
       - checkout
       - restore_cache:
