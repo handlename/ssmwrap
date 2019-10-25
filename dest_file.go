@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-
-	"github.com/pkg/errors"
 )
 
 // DestinationFile is an implementation of Destination interface.
@@ -23,7 +21,7 @@ func (d DestinationFile) Output(parameters map[string]string) error {
 	for _, target := range d.Targets {
 		err := ioutil.WriteFile(target.Path, []byte(parameters[target.Name]), target.Mode)
 		if err != nil {
-			return errors.Wrapf(err, "failed to write to file %s", target.Path)
+			return fmt.Errorf("failed to write to file %s: %w", target.Path, err)
 		}
 
 		uid := target.Uid
@@ -38,7 +36,7 @@ func (d DestinationFile) Output(parameters map[string]string) error {
 
 		err = os.Chown(target.Path, uid, gid)
 		if err != nil {
-			return errors.Wrapf(err, "failed to chown file %s", target.Path)
+			return fmt.Errorf("failed to chown file %s: %w", target.Path, err)
 		}
 	}
 

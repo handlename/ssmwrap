@@ -1,7 +1,7 @@
 package ssmwrap
 
 import (
-	"github.com/pkg/errors"
+	"fmt"
 )
 
 type ExportOptions struct {
@@ -29,7 +29,7 @@ func Export(options ExportOptions) error {
 	{
 		p, err := ssm.fetchParametersByPaths(client, options.Paths, options.Recursive)
 		if err != nil {
-			return errors.Wrap(err, "failed to fetch parameters from SSM")
+			return fmt.Errorf("failed to fetch parameters from SSM: %w", err)
 		}
 		for key, value := range p {
 			parameters[key] = value
@@ -39,7 +39,7 @@ func Export(options ExportOptions) error {
 	{
 		p, err := ssm.fetchParametersByNames(client, options.Names)
 		if err != nil {
-			return errors.Wrap(err, "failed to fetch parameters from SSM")
+			return fmt.Errorf("failed to fetch parameters from SSM: %w", err)
 		}
 		for key, value := range p {
 			parameters[key] = value

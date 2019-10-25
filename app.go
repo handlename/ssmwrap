@@ -1,12 +1,12 @@
 package ssmwrap
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"syscall"
 
 	"github.com/aws/aws-sdk-go/service/ssm"
-	"github.com/pkg/errors"
 )
 
 type SSMConnector interface {
@@ -47,7 +47,7 @@ func Run(options RunOptions, ssm SSMConnector, dests []Destination) error {
 	{
 		p, err := ssm.fetchParametersByPaths(client, options.Paths, options.Recursive)
 		if err != nil {
-			return errors.Wrap(err, "failed to fetch parameters from SSM")
+			return fmt.Errorf("failed to fetch parameters from SSM: %w", err)
 		}
 		for key, value := range p {
 			parameters[key] = value
@@ -57,7 +57,7 @@ func Run(options RunOptions, ssm SSMConnector, dests []Destination) error {
 	{
 		p, err := ssm.fetchParametersByNames(client, options.Names)
 		if err != nil {
-			return errors.Wrap(err, "failed to fetch parameters from SSM")
+			return fmt.Errorf("failed to fetch parameters from SSM: %w", err)
 		}
 		for key, value := range p {
 			parameters[key] = value
@@ -67,12 +67,12 @@ func Run(options RunOptions, ssm SSMConnector, dests []Destination) error {
 	for _, dest := range dests {
 		err = dest.Output(parameters)
 		if err != nil {
-			return errors.Wrapf(err, "error occured on output to %s", dest.Name())
+			return fmt.Errorf("error occured on output to %s: %w", dest.Name(), err)
 		}
 	}
 
 	if err := runCommand(options.Command, os.Environ()); err != nil {
-		return errors.Wrapf(err, "failed to run command %+s", options.Command)
+		return fmt.Errorf("failed to run command %+s: %w", options.Command, err)
 	}
 
 	return nil

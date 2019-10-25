@@ -1,10 +1,11 @@
 package ssmwrap
 
 import (
+	"fmt"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ssm"
-	"github.com/pkg/errors"
 )
 
 type DefaultSSMConnector struct{}
@@ -31,7 +32,7 @@ func (c DefaultSSMConnector) fetchParametersByPaths(client *ssm.SSM, paths []str
 
 			output, err := client.GetParametersByPath(input)
 			if err != nil {
-				return params, errors.Wrap(err, "failed to GetParametersByPath")
+				return params, fmt.Errorf("failed to GetParametersByPath: %w", err)
 			}
 
 			for _, param := range output.Parameters {
@@ -64,7 +65,7 @@ func (c DefaultSSMConnector) fetchParametersByNames(client *ssm.SSM, names []str
 
 	output, err := client.GetParameters(input)
 	if err != nil {
-		return params, errors.Wrap(err, "failed to GetParameters")
+		return params, fmt.Errorf("failed to GetParameters: %s", err)
 	}
 
 	for _, param := range output.Parameters {
@@ -77,7 +78,7 @@ func (c DefaultSSMConnector) fetchParametersByNames(client *ssm.SSM, names []str
 func newSSMClient(retries int) (*ssm.SSM, error) {
 	sess, err := session.NewSession()
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to start session")
+		return nil, fmt.Errorf("failed to start session: %w", err)
 	}
 
 	// config.MaxRetries is defaults to -1
