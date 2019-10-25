@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1 (2019-10-25)
+
+- update dependencies #15 #17
+- build with go 1.13
+
 ## 1.0.0 (2019-03-04)
 
 - add `-names` option #14
