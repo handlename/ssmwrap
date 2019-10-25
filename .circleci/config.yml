@@ -13,7 +13,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: go-packages-{{ checksum "Gopkg.lock" }}
+          key: go-packages-{{ checksum "go.sum" }}
       - run: mkdir -p $TEST_RESULTS
       - run: go get github.com/jstemmer/go-junit-report
       - run: dep ensure
@@ -25,7 +25,7 @@ jobs:
       - store_test_results:
           path: /tmp/test-results
       - save_cache:
-          key: go-packages-{{ checksum "Gopkg.lock" }}
+          key: go-packages-{{ checksum "go.sum" }}
           paths:
             - vendor
   upload:
@@ -36,13 +36,13 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: go-packages-{{ checksum "Gopkg.lock" }}
+          key: go-packages-{{ checksum "go.sum" }}
       - run: go get github.com/Songmu/goxz/cmd/goxz
       - run: go get github.com/tcnksm/ghr
       - run: dep ensure
       - run: make upload
       - save_cache:
-          key: go-packages-{{ checksum "Gopkg.lock" }}
+          key: go-packages-{{ checksum "go.sum" }}
           paths:
             - vendor
 
