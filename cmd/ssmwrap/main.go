@@ -214,6 +214,9 @@ func main() {
 		dests = append(dests, ssmwrap.DestinationFile{
 			Targets: fileTargets,
 		})
+		for _, t := range fileTargets {
+			options.Names = append(options.Names, t.Name)
+		}
 	}
 
 	if err := ssmwrap.Run(options, ssm, dests); err != nil {

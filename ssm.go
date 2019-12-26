@@ -51,7 +51,7 @@ func (c DefaultSSMConnector) fetchParametersByPaths(client *ssm.SSM, paths []str
 }
 
 func (c DefaultSSMConnector) fetchParametersByNames(client *ssm.SSM, names []string) (map[string]string, error) {
-	params := map[string]string{}
+	params := make(map[string]string, len(names))
 	if len(names) == 0 {
 		return params, nil
 	}
@@ -60,6 +60,10 @@ func (c DefaultSSMConnector) fetchParametersByNames(client *ssm.SSM, names []str
 		WithDecryption: aws.Bool(true),
 	}
 	for _, name := range names {
+		if _, exists := params[name]; exists { // discard duplication
+			continue
+		}
+		params[name] = ""
 		input.Names = append(input.Names, aws.String(name))
 	}
 
