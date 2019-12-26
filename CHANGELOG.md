@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2 (2019-12-26)
+
+- now, -file option enabled without -path/-names #21 #22
+- update dependencies #20
+
 ## 1.0.1 (2019-10-25)
 
 - update dependencies #15 #17
