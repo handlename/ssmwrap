@@ -80,7 +80,9 @@ func (c DefaultSSMConnector) fetchParametersByNames(client *ssm.SSM, names []str
 }
 
 func newSSMClient(retries int) (*ssm.SSM, error) {
-	sess, err := session.NewSession()
+	sess, err := session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to start session: %w", err)
 	}
