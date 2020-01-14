@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3 (2020-01-14)
+
+- ssmwrap reads sharde config file (~/.aws/config) #24
+- update dependencies #23
+
 ## 1.0.2 (2019-12-26)
 
 - now, -file option enabled without -path/-names #21 #22
