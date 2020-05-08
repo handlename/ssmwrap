@@ -1,6 +1,7 @@
 package ssmwrap
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -79,6 +80,9 @@ func Run(options RunOptions, ssm SSMConnector, dests []Destination) error {
 }
 
 func runCommand(command, envVars []string) error {
+	if len(command) == 0 {
+		return errors.New("command required")
+	}
 	bin, err := exec.LookPath(command[0])
 	if err != nil {
 		return err

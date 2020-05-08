@@ -193,6 +193,10 @@ func main() {
 		Retries:   retries,
 		Command:   flag.Args(),
 	}
+	if len(options.Command) == 0 {
+		fmt.Fprintln(os.Stderr, "command required in arguments")
+		os.Exit(2)
+	}
 
 	if paths != "" {
 		options.Paths = strings.Split(paths, ",")
