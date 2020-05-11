@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0 (2020-05-11)
+
+- release from GitHub Actions. there are no changes for ssmwrap itself #31
+
 ## 1.0.3 (2020-01-14)
 
 - ssmwrap reads sharde config file (~/.aws/config) #24
