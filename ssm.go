@@ -63,7 +63,6 @@ func (c DefaultSSMConnector) fetchParametersByNames(client *ssm.SSM, names []str
 		if _, exists := params[name]; exists { // discard duplication
 			continue
 		}
-		params[name] = ""
 		input.Names = append(input.Names, aws.String(name))
 	}
 
