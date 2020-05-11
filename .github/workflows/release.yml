@@ -21,4 +21,4 @@ jobs:
           curl -sL https://github.com/tcnksm/ghr/releases/download/v0.13.0/ghr_v0.13.0_linux_amd64.tar.gz | tar zxvf - && install ghr_v0.13.0_linux_amd64/ghr ~/bin/
       - name: upload
         run: |
-          make upload
+          PATH=~/bin:$PATH make upload
