@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.1 (2020-05-11)
+
+- fix panic without command #30
+- fix useless export for versioned name #29
+- update dependencies #28
+
 ## 1.1.0 (2020-05-11)
 
 - release from GitHub Actions. there are no changes for ssmwrap itself #31
