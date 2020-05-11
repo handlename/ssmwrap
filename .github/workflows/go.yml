@@ -10,12 +10,12 @@ jobs:
           - 1.14
     steps:
       - name: setup go
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go }}
         id: go
       - name: checkout code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: build & test
         run: |
           go test -v .
