@@ -22,3 +22,5 @@ jobs:
       - name: upload
         run: |
           PATH=~/bin:$PATH make upload
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
