@@ -5,6 +5,8 @@ on:
       - "!**"
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
+  workflow_dispatch: ~
+
 jobs:
   release:
     name: release
@@ -19,8 +21,13 @@ jobs:
           mkdir -p ~/bin
           curl -sL https://github.com/Songmu/goxz/releases/download/v0.6.0/goxz_v0.6.0_linux_amd64.tar.gz | tar zxvf - && install goxz_v0.6.0_linux_amd64/goxz ~/bin/
           curl -sL https://github.com/tcnksm/ghr/releases/download/v0.13.0/ghr_v0.13.0_linux_amd64.tar.gz | tar zxvf - && install ghr_v0.13.0_linux_amd64/ghr ~/bin/
-      - name: upload
+      - name: release binary
         run: |
           PATH=~/bin:$PATH make upload
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: release docker image
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+          make build-docker-image
+          make push-docker-image
