@@ -37,7 +37,7 @@ upload: dist
 	  $(DIST_DIR)
 
 .PHONY: build-docker-image
-build-docker-image: dist
+build-docker-image:
 	docker build \
 	  --rm \
 	  --build-arg VERSION=$(VERSION) \
