@@ -36,5 +36,18 @@ upload: dist
 	  'v$(VERSION)' \
 	  $(DIST_DIR)
 
+.PHONY: build-docker-image
+build-docker-image: dist
+	docker build \
+	  --rm \
+	  --build-arg VERSION=$(VERSION) \
+	  --tag $(PROJECT_USERNAME)/$(PROJECT_REPONAME):$(VERSION) \
+	  --tag ghcr.io/$(PROJECT_USERNAME)/$(PROJECT_REPONAME):$(VERSION) \
+	  .
+
+.PHONY: push-docker-image
+push-docker-image:
+	docker push ghcr.io/$(PROJECT_USERNAME)/$(PROJECT_REPONAME):$(VERSION)
+
 clean:
 	rm -rf cmd/ssmwrap/ssmwrap $(DIST_DIR)/*
