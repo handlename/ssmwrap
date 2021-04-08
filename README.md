@@ -96,9 +96,9 @@ if err != nil {
 foo := os.Getenv("SSM_FOO")  // a value of /path/foo in SSM
 ```
 
-## Licence
+## License
 
-MIT
+see [LICENSE](https://github.com/handlename/ssmwrap/blob/master/LICENSE) file.
 
 ## Special Thanks
 
