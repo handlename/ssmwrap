@@ -38,7 +38,7 @@ func (d DestinationEnv) formatParametersAsEnvVars(parameters map[string]string) 
 
 	for name, value := range parameters {
 		parts := strings.Split(name, "/")
-		key := strings.ToUpper(d.Prefix + parts[len(parts)-1])
+		key := strings.ToUpper(d.Prefix + strings.Join(parts[1:], "_"))
 		envVars = append(envVars, fmt.Sprintf("%s=%s", key, value))
 	}
 

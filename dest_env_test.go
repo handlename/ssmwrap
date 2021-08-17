@@ -28,7 +28,7 @@ func TestDestinationEnvFormatParametersAsEnvVars(t *testing.T) {
 				"/d/e/e/p/path": "deep",
 			},
 			Expected: []string{
-				"PATH=deep",
+				"D_E_E_P_PATH=deep",
 			},
 		},
 		{
@@ -38,7 +38,7 @@ func TestDestinationEnvFormatParametersAsEnvVars(t *testing.T) {
 			},
 			InputPrefix: "MY_",
 			Expected: []string{
-				"MY_NAME=john",
+				"MY_COMMON_NAME=john",
 			},
 		},
 		{
@@ -48,7 +48,7 @@ func TestDestinationEnvFormatParametersAsEnvVars(t *testing.T) {
 			},
 			InputPrefix: "my_",
 			Expected: []string{
-				"MY_TITLE=event",
+				"MY_COMMON_TITLE=event",
 			},
 		},
 	}
@@ -63,7 +63,7 @@ func TestDestinationEnvFormatParametersAsEnvVars(t *testing.T) {
 		envVars := dest.formatParametersAsEnvVars(pattern.InputParameters)
 
 		if !reflect.DeepEqual(envVars, pattern.Expected) {
-			t.Errorf("unexpected envVars: %+v", envVars)
+			t.Errorf("unexpected envVars\n\tgot:%+v\n\texpected:%+v", envVars, pattern.Expected)
 		}
 	}
 }
