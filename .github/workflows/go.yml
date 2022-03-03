@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         go:
-          - 1.14
+          - 1.17.7
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-go@v2
