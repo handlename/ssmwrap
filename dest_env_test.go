@@ -8,10 +8,11 @@ import (
 
 func TestDestinationEnvFormatParametersAsEnvVars(t *testing.T) {
 	patterns := []struct {
-		Title           string
-		InputParameters map[string]string
-		InputPrefix     string
-		Expected        []string
+		Title              string
+		InputParameters    map[string]string
+		InputPrefix        string
+		InputUseEntirePath bool
+		Expected           []string
 	}{
 		{
 			Title: "to upper",
@@ -29,6 +30,16 @@ func TestDestinationEnvFormatParametersAsEnvVars(t *testing.T) {
 			},
 			Expected: []string{
 				"PATH=deep",
+			},
+		},
+		{
+			Title: "deep path, enable entire path",
+			InputParameters: map[string]string{
+				"/d/e/e/p/path": "deep",
+			},
+			InputUseEntirePath: true,
+			Expected: []string{
+				"D_E_E_P_PATH=deep",
 			},
 		},
 		{
@@ -57,13 +68,14 @@ func TestDestinationEnvFormatParametersAsEnvVars(t *testing.T) {
 		t.Log(pattern.Title)
 
 		dest := DestinationEnv{
-			Prefix: pattern.InputPrefix,
+			Prefix:        pattern.InputPrefix,
+			UseEntirePath: pattern.InputUseEntirePath,
 		}
 
 		envVars := dest.formatParametersAsEnvVars(pattern.InputParameters)
 
 		if !reflect.DeepEqual(envVars, pattern.Expected) {
-			t.Errorf("unexpected envVars: %+v", envVars)
+			t.Errorf("unexpected envVars\n\tgot:%+v\n\texpected:%+v", envVars, pattern.Expected)
 		}
 	}
 }
