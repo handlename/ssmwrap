@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.0 (2022-03-03)
+
+- build with go v1.17.7
+- add `-env-entire-path` option #51 #53 #55
+- add release binaries for arm64
+- add lisence file #45
+- update package aws/aws-sdk-go
+
 ## 1.1.1 (2020-05-11)
 
 - fix panic without command #30
