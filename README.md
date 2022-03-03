@@ -27,6 +27,10 @@ $ ssmwrap -help
 Usage of ./cmd/ssmwrap/ssmwrap:
   -env
     	export values as environment variables (default true)
+  -env-entire-path
+    	use entire parameter path for name of environment variables
+    	disabled: /path/to/value -> VALUE
+    	enabled: /path/to/value -> PATH_TO_VALUE
   -env-prefix string
     	prefix for environment variables
   -file value
@@ -34,13 +38,13 @@ Usage of ./cmd/ssmwrap/ssmwrap:
     	format:  Name=VALUE_NAME,Path=FILE_PATH,Mode=FILE_MODE,Gid=FILE_GROUP_ID,Uid=FILE_USER_ID
     	example: Name=/foo/bar,Path=/etc/bar,Mode=600,Gid=123,Uid=456
   -names string
-        comma separated parameter names
+    	comma separated parameter names
   -no-env
     	disable export to environment variables
   -no-recursive
     	retrieve values just under -paths only
   -paths string
-        comma separated parameter paths
+    	comma separated parameter paths
   -prefix string
     	alias for -env-prefix
   -recursive
