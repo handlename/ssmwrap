@@ -21,7 +21,7 @@ dist: clean
 	  -n ssmwrap \
 	  -build-ldflags '-X main.version=$(VERSION)' \
 	  -os='linux,darwin,windows' \
-	  -arch='amd64' \
+	  -arch='amd64,arm64' \
 	  -d $(DIST_DIR) \
 	  ./cmd/ssmwrap
 
