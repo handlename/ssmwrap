@@ -8,7 +8,8 @@ import (
 
 // DestinationEnv is an implementation of Destination interface.
 type DestinationEnv struct {
-	Prefix string
+	Prefix        string
+	UseEntirePath bool
 }
 
 func (d DestinationEnv) Name() string {
@@ -38,7 +39,14 @@ func (d DestinationEnv) formatParametersAsEnvVars(parameters map[string]string) 
 
 	for name, value := range parameters {
 		parts := strings.Split(name, "/")
-		key := strings.ToUpper(d.Prefix + strings.Join(parts[1:], "_"))
+
+		var key string
+		if d.UseEntirePath {
+			key = strings.ToUpper(d.Prefix + strings.Join(parts[1:], "_"))
+		} else {
+			key = strings.ToUpper(d.Prefix + parts[len(parts)-1])
+		}
+
 		envVars = append(envVars, fmt.Sprintf("%s=%s", key, value))
 	}
 

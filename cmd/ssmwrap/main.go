@@ -145,9 +145,10 @@ func main() {
 		noRecursiveFlag bool
 		retries         int
 
-		envOutputFlag   bool
-		envNoOutputFlag bool
-		envPrefix       string
+		envOutputFlag    bool
+		envNoOutputFlag  bool
+		envPrefix        string
+		envUseEntirePath bool
 
 		fileTargets FileTargets
 
@@ -163,6 +164,7 @@ func main() {
 	flag.BoolVar(&envOutputFlag, "env", true, "export values as environment variables")
 	flag.BoolVar(&envNoOutputFlag, "no-env", false, "disable export to environment variables")
 	flag.StringVar(&envPrefix, "env-prefix", "", "prefix for environment variables")
+	flag.BoolVar(&envUseEntirePath, "env-entire-path", false, "use entire parameter path for name of environment variables\ndisabled: /path/to/value -> VALUE\nenabled: /path/to/value -> PATH_TO_VALUE")
 	flag.StringVar(&envPrefix, "prefix", "", "alias for -env-prefix")
 
 	flag.Var(&fileTargets, "file", "write values as file\nformat:  Name=VALUE_NAME,Path=FILE_PATH,Mode=FILE_MODE,Gid=FILE_GROUP_ID,Uid=FILE_USER_ID\nexample: Name=/foo/bar,Path=/etc/bar,Mode=600,Gid=123,Uid=456")
@@ -210,7 +212,8 @@ func main() {
 
 	if !envNoOutputFlag {
 		dests = append(dests, ssmwrap.DestinationEnv{
-			Prefix: envPrefix,
+			Prefix:        envPrefix,
+			UseEntirePath: envUseEntirePath,
 		})
 	}
 
