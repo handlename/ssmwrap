@@ -5,11 +5,12 @@ import (
 )
 
 type ExportOptions struct {
-	Paths     []string
-	Names     []string
-	Prefix    string
-	Recursive bool
-	Retries   int
+	Paths         []string
+	Names         []string
+	Prefix        string
+	UseEntirePath bool
+	Recursive     bool
+	Retries       int
 }
 
 // Export fetches paramters from SSM and export those to environment variables.
@@ -17,7 +18,8 @@ type ExportOptions struct {
 func Export(options ExportOptions) error {
 	ssm := DefaultSSMConnector{}
 	dest := DestinationEnv{
-		Prefix: options.Prefix,
+		Prefix:        options.Prefix,
+		UseEntirePath: options.UseEntirePath,
 	}
 
 	parameters := map[string]string{}
