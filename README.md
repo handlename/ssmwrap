@@ -16,6 +16,17 @@ $ ssmwrap -paths /production -- your_command
 
 ## Install
 
+Download binary from [releases](https://github.com/handlename/ssmwrap/releases)
+
+or
+
+```console
+$ brew tap handlename/homebrew-tap
+$ brew install ssmwrap
+```
+
+or
+
 ```console
 $ go get github.com/handlename/ssmwrap/cmd/ssmwrap
 ```
