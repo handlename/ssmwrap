@@ -128,7 +128,7 @@ func cliFlagViaEnv(prefix string, multiple bool) []string {
 	if multiple {
 		values := []string{}
 
-		// read values named like `SSMWRAP_FOO_123`
+		// read values named like `{prefix}_FOO_123`
 		re := regexp.MustCompile("^" + prefix + `(_\d+)?$`)
 
 		for _, env := range os.Environ() {
@@ -146,7 +146,7 @@ func cliFlagViaEnv(prefix string, multiple bool) []string {
 }
 
 // RunCLI runs ssmwrap as a CLI, returns exit code.
-func RunCLI(version string) int {
+func RunCLI(version string, flagEnvPrefix string) int {
 	var (
 		paths           string
 		names           string
@@ -180,7 +180,7 @@ func RunCLI(version string) int {
 
 	flag.BoolVar(&versionFlag, "version", false, "display version")
 	flag.VisitAll(func(f *flag.Flag) {
-		// read flag values also from environment variable e.g. SSMWRAP_PATHS
+		// read flag values also from environment variable e.g. {flagEnvPrefix}_PATHS
 
 		multiple := false
 
@@ -188,7 +188,7 @@ func RunCLI(version string) int {
 			multiple = true
 		}
 
-		for _, value := range cliFlagViaEnv("SSMWRAP_"+strings.ToUpper(f.Name), multiple) {
+		for _, value := range cliFlagViaEnv(flagEnvPrefix+strings.ToUpper(f.Name), multiple) {
 			f.Value.Set(value)
 		}
 	})

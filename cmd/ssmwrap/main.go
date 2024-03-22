@@ -8,6 +8,8 @@ import (
 
 var version string
 
+const FlagEnvPrefix = "SSMWRAP_"
+
 func main() {
-	os.Exit(ssmwrap.RunCLI(version))
+	os.Exit(ssmwrap.RunCLI(version, FlagEnvPrefix))
 }
