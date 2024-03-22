@@ -55,25 +55,25 @@ func (ts FileTargets) parseFlag(value string) (*FileTarget, error) {
 		case "Name":
 			target.Name = value
 		case "Path":
-			path, err := ts.checkPath(value)
+			path, err := ts.parsePath(value)
 			if err != nil {
 				return nil, fmt.Errorf("invalid Path: %s", err)
 			}
 			target.Path = path
 		case "Mode":
-			mode, err := ts.checkMode(value)
+			mode, err := ts.parseMode(value)
 			if err != nil {
 				return nil, fmt.Errorf("invalid Mode: %s", err)
 			}
 			target.Mode = mode
 		case "Uid":
-			uid, err := ts.checkUid(value)
+			uid, err := ts.parseUid(value)
 			if err != nil {
 				return nil, fmt.Errorf("invalid Uid: %s", err)
 			}
 			target.Uid = uid
 		case "Gid":
-			gid, err := ts.checkGid(value)
+			gid, err := ts.parseGid(value)
 			if err != nil {
 				return nil, fmt.Errorf("invalid Gid: %s", err)
 			}
@@ -86,7 +86,7 @@ func (ts FileTargets) parseFlag(value string) (*FileTarget, error) {
 	return target, nil
 }
 
-func (ts FileTargets) checkPath(value string) (string, error) {
+func (ts FileTargets) parsePath(value string) (string, error) {
 	// expand path
 	path, err := filepath.Abs(value)
 	if err != nil {
@@ -96,7 +96,7 @@ func (ts FileTargets) checkPath(value string) (string, error) {
 	return path, nil
 }
 
-func (ts FileTargets) checkMode(value string) (os.FileMode, error) {
+func (ts FileTargets) parseMode(value string) (os.FileMode, error) {
 	// convert `Mode` to os.FileMode
 	mode, err := strconv.ParseUint(value, 8, 32)
 	if err != nil {
@@ -106,7 +106,7 @@ func (ts FileTargets) checkMode(value string) (os.FileMode, error) {
 	return os.FileMode(mode), nil
 }
 
-func (ts FileTargets) checkGid(value string) (int, error) {
+func (ts FileTargets) parseGid(value string) (int, error) {
 	gid, err := strconv.Atoi(value)
 	if err != nil {
 		return 0, fmt.Errorf("invalid Gid")
@@ -115,7 +115,7 @@ func (ts FileTargets) checkGid(value string) (int, error) {
 	return gid, nil
 }
 
-func (ts FileTargets) checkUid(value string) (int, error) {
+func (ts FileTargets) parseUid(value string) (int, error) {
 	uid, err := strconv.Atoi(value)
 	if err != nil {
 		return 0, fmt.Errorf("invalid Uid")

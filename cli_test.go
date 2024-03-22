@@ -75,7 +75,7 @@ func TestFileTargetsParseFlag(t *testing.T) {
 				t.Errorf("unexpected Name: %s", res.Name)
 			}
 
-			absPath, err := targets.checkPath(test.expected.Path)
+			absPath, err := targets.parsePath(test.expected.Path)
 			if err != nil {
 				t.Errorf("invalid expected path %s: %s", test.expected.Path, err)
 			}
