@@ -9,8 +9,8 @@ jobs:
         go:
           - 1.17.7
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go }}
         id: go
