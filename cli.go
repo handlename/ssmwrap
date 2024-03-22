@@ -11,9 +11,9 @@ import (
 	"strings"
 )
 
-type FileTargets []FileTarget
+type FileTargetFlags []FileTarget
 
-func (ts *FileTargets) String() string {
+func (ts *FileTargetFlags) String() string {
 	s := ""
 
 	for _, t := range *ts {
@@ -23,7 +23,7 @@ func (ts *FileTargets) String() string {
 	return s
 }
 
-func (ts *FileTargets) Set(value string) error {
+func (ts *FileTargetFlags) Set(value string) error {
 	target, err := ts.parseFlag(value)
 	if err != nil {
 		return err
@@ -38,7 +38,7 @@ func (ts *FileTargets) Set(value string) error {
 	return nil
 }
 
-func (ts FileTargets) parseFlag(value string) (*FileTarget, error) {
+func (ts FileTargetFlags) parseFlag(value string) (*FileTarget, error) {
 	target := &FileTarget{}
 	parts := strings.Split(value, ",")
 
@@ -86,7 +86,7 @@ func (ts FileTargets) parseFlag(value string) (*FileTarget, error) {
 	return target, nil
 }
 
-func (ts FileTargets) parsePath(value string) (string, error) {
+func (ts FileTargetFlags) parsePath(value string) (string, error) {
 	// expand path
 	path, err := filepath.Abs(value)
 	if err != nil {
@@ -96,7 +96,7 @@ func (ts FileTargets) parsePath(value string) (string, error) {
 	return path, nil
 }
 
-func (ts FileTargets) parseMode(value string) (os.FileMode, error) {
+func (ts FileTargetFlags) parseMode(value string) (os.FileMode, error) {
 	// convert `Mode` to os.FileMode
 	mode, err := strconv.ParseUint(value, 8, 32)
 	if err != nil {
@@ -106,7 +106,7 @@ func (ts FileTargets) parseMode(value string) (os.FileMode, error) {
 	return os.FileMode(mode), nil
 }
 
-func (ts FileTargets) parseGid(value string) (int, error) {
+func (ts FileTargetFlags) parseGid(value string) (int, error) {
 	gid, err := strconv.Atoi(value)
 	if err != nil {
 		return 0, fmt.Errorf("invalid Gid")
@@ -115,7 +115,7 @@ func (ts FileTargets) parseGid(value string) (int, error) {
 	return gid, nil
 }
 
-func (ts FileTargets) parseUid(value string) (int, error) {
+func (ts FileTargetFlags) parseUid(value string) (int, error) {
 	uid, err := strconv.Atoi(value)
 	if err != nil {
 		return 0, fmt.Errorf("invalid Uid")
@@ -159,7 +159,7 @@ func RunCLI(version string) int {
 		envPrefix        string
 		envUseEntirePath bool
 
-		fileTargets FileTargets
+		fileTargets FileTargetFlags
 
 		versionFlag bool
 	)

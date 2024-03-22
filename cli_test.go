@@ -49,7 +49,7 @@ func TestFileTargetsParseFlag(t *testing.T) {
 		},
 	}
 
-	targets := FileTargets{}
+	targets := FileTargetFlags{}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
