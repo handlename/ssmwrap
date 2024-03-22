@@ -11,14 +11,14 @@ import (
 func TestDestinationFileOutputSuccessAll(t *testing.T) {
 	targets := []FileTarget{
 		// parameter exists -> file its content is parameter value will be created
-		FileTarget{
+		{
 			Name: "foo",
 			Path: makeTempfileName(t),
 			Mode: 0600,
 		},
 
 		// parameter not exists -> empty file will be created
-		FileTarget{
+		{
 			Name: "bar",
 			Path: makeTempfileName(t),
 			Mode: 0600,
@@ -69,7 +69,7 @@ func TestDestinationFileOutputFailedToWrite(t *testing.T) {
 
 	dest := DestinationFile{
 		Targets: []FileTarget{
-			FileTarget{
+			{
 				Name: "foo",
 				Path: tempDirPath, // directory!!
 				Mode: 0600,
