@@ -1,5 +1,7 @@
 # Changelog
 
+## [v1.2.1](https://github.com/handlename/ssmwrap/compare/v1.2.1...v1.2.1) - 2024-03-22
+
 ## 1.2.0 (2022-03-03)
 
 - build with go v1.17.7
