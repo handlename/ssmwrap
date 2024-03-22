@@ -113,7 +113,7 @@ foo := os.Getenv("SSM_FOO")  // a value of /path/foo in SSM
 
 ## License
 
-see [LICENSE](https://github.com/handlename/ssmwrap/blob/master/LICENSE) file.
+see [LICENSE](https://github.com/handlename/ssmwrap/blob/main/LICENSE) file.
 
 ## Special Thanks
 

@@ -12,10 +12,10 @@ jobs:
     name: release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
         with:
-          go-version: 1.17.7
+          go-version: '^1.22.0'
       - name: download tools
         run: |
           mkdir -p ~/bin
@@ -28,6 +28,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: release docker image
         run: |
-          echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+          echo ${{ secrets.GH_PAT }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
           make build-docker-image
           make push-docker-image
