@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -32,6 +33,7 @@ func (ts *FileTargets) Set(value string) error {
 	target := ssmwrap.FileTarget{}
 
 	for _, part := range parts {
+		// TODO: validate parameter format. currently, invalid parameters will cause panic
 		param := strings.SplitN(part, "=", 2)
 		key := param[0]
 		value := param[1]
@@ -226,7 +228,9 @@ func main() {
 		}
 	}
 
-	if err := ssmwrap.Run(options, ssm, dests); err != nil {
+	ctx := context.TODO()
+
+	if err := ssmwrap.Run(ctx, options, ssm, dests); err != nil {
 		fmt.Fprintf(os.Stderr, "%s", err)
 		os.Exit(1)
 	}

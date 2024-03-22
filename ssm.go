@@ -1,16 +1,17 @@
 package ssmwrap
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/service/ssm"
 )
 
 type DefaultSSMConnector struct{}
 
-func (c DefaultSSMConnector) fetchParametersByPaths(client *ssm.SSM, paths []string, recursive bool) (map[string]string, error) {
+func (c DefaultSSMConnector) fetchParametersByPaths(ctx context.Context, client *ssm.Client, paths []string, recursive bool) (map[string]string, error) {
 	params := map[string]string{}
 	if len(paths) == 0 {
 		return params, nil
@@ -27,10 +28,10 @@ func (c DefaultSSMConnector) fetchParametersByPaths(client *ssm.SSM, paths []str
 			}
 
 			if nextToken != "" {
-				input.SetNextToken(nextToken)
+				input.NextToken = aws.String(nextToken)
 			}
 
-			output, err := client.GetParametersByPath(input)
+			output, err := client.GetParametersByPath(ctx, input)
 			if err != nil {
 				return params, fmt.Errorf("failed to GetParametersByPath: %w", err)
 			}
@@ -50,7 +51,7 @@ func (c DefaultSSMConnector) fetchParametersByPaths(client *ssm.SSM, paths []str
 	return params, nil
 }
 
-func (c DefaultSSMConnector) fetchParametersByNames(client *ssm.SSM, names []string) (map[string]string, error) {
+func (c DefaultSSMConnector) fetchParametersByNames(ctx context.Context, client *ssm.Client, names []string) (map[string]string, error) {
 	params := make(map[string]string, len(names))
 	if len(names) == 0 {
 		return params, nil
@@ -63,10 +64,10 @@ func (c DefaultSSMConnector) fetchParametersByNames(client *ssm.SSM, names []str
 		if _, exists := params[name]; exists { // discard duplication
 			continue
 		}
-		input.Names = append(input.Names, aws.String(name))
+		input.Names = append(input.Names, name)
 	}
 
-	output, err := client.GetParameters(input)
+	output, err := client.GetParameters(ctx, input)
 	if err != nil {
 		return params, fmt.Errorf("failed to GetParameters: %s", err)
 	}
@@ -78,18 +79,17 @@ func (c DefaultSSMConnector) fetchParametersByNames(client *ssm.SSM, names []str
 	return params, nil
 }
 
-func newSSMClient(retries int) (*ssm.SSM, error) {
-	sess, err := session.NewSessionWithOptions(session.Options{
-		SharedConfigState: session.SharedConfigEnable,
-	})
+func newSSMClient(ctx context.Context, retries int) (*ssm.Client, error) {
+	opts := []func(*config.LoadOptions) error{}
+
+	if 0 < retries {
+		opts = append(opts, config.WithRetryMaxAttempts(retries))
+	}
+
+	conf, err := config.LoadDefaultConfig(ctx, opts...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to start session: %w", err)
+		return nil, fmt.Errorf("failed to load default aws config: %w", err)
 	}
 
-	// config.MaxRetries is defaults to -1
-	if retries <= 0 {
-		retries = -1
-	}
-
-	return ssm.New(sess, aws.NewConfig().WithMaxRetries(retries)), nil
+	return ssm.NewFromConfig(conf), nil
 }

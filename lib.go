@@ -1,6 +1,7 @@
 package ssmwrap
 
 import (
+	"context"
 	"fmt"
 )
 
@@ -15,7 +16,7 @@ type ExportOptions struct {
 
 // Export fetches paramters from SSM and export those to environment variables.
 // This is for use ssmwrap as a library.
-func Export(options ExportOptions) error {
+func Export(ctx context.Context, options ExportOptions) error {
 	ssm := DefaultSSMConnector{}
 	dest := DestinationEnv{
 		Prefix:        options.Prefix,
@@ -23,13 +24,13 @@ func Export(options ExportOptions) error {
 	}
 
 	parameters := map[string]string{}
-	client, err := newSSMClient(options.Retries)
+	client, err := newSSMClient(ctx, options.Retries)
 	if err != nil {
 		return err
 	}
 
 	{
-		p, err := ssm.fetchParametersByPaths(client, options.Paths, options.Recursive)
+		p, err := ssm.fetchParametersByPaths(ctx, client, options.Paths, options.Recursive)
 		if err != nil {
 			return fmt.Errorf("failed to fetch parameters from SSM: %w", err)
 		}
@@ -39,7 +40,7 @@ func Export(options ExportOptions) error {
 	}
 
 	{
-		p, err := ssm.fetchParametersByNames(client, options.Names)
+		p, err := ssm.fetchParametersByNames(ctx, client, options.Names)
 		if err != nil {
 			return fmt.Errorf("failed to fetch parameters from SSM: %w", err)
 		}

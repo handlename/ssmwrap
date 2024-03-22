@@ -1,18 +1,19 @@
 package ssmwrap
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"os"
 	"os/exec"
 	"syscall"
 
-	"github.com/aws/aws-sdk-go/service/ssm"
+	"github.com/aws/aws-sdk-go-v2/service/ssm"
 )
 
 type SSMConnector interface {
-	fetchParametersByPaths(client *ssm.SSM, paths []string, recursive bool) (map[string]string, error)
-	fetchParametersByNames(client *ssm.SSM, names []string) (map[string]string, error)
+	fetchParametersByPaths(ctx context.Context, client *ssm.Client, paths []string, recursive bool) (map[string]string, error)
+	fetchParametersByNames(ctx context.Context, client *ssm.Client, names []string) (map[string]string, error)
 }
 
 type Destination interface {
@@ -38,15 +39,15 @@ type RunOptions struct {
 	Command []string
 }
 
-func Run(options RunOptions, ssm SSMConnector, dests []Destination) error {
-	client, err := newSSMClient(options.Retries)
+func Run(ctx context.Context, options RunOptions, ssm SSMConnector, dests []Destination) error {
+	client, err := newSSMClient(ctx, options.Retries)
 	if err != nil {
 		return err
 	}
 	parameters := map[string]string{}
 
 	{
-		p, err := ssm.fetchParametersByPaths(client, options.Paths, options.Recursive)
+		p, err := ssm.fetchParametersByPaths(ctx, client, options.Paths, options.Recursive)
 		if err != nil {
 			return fmt.Errorf("failed to fetch parameters from SSM: %w", err)
 		}
@@ -56,7 +57,7 @@ func Run(options RunOptions, ssm SSMConnector, dests []Destination) error {
 	}
 
 	{
-		p, err := ssm.fetchParametersByNames(client, options.Names)
+		p, err := ssm.fetchParametersByNames(ctx, client, options.Names)
 		if err != nil {
 			return fmt.Errorf("failed to fetch parameters from SSM: %w", err)
 		}
