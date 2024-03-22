@@ -16,4 +16,4 @@ jobs:
         id: go
       - name: build & test
         run: |
-          go test -v .
+          make test

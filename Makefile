@@ -8,6 +8,9 @@ export GO111MODULE := on
 cmd/ssmwrap/ssmwrap: *.go */**/*.go
 	CGO_ENABLED=0 go build -v -ldflags '-X main.version=$(VERSION)' -o $@ cmd/ssmwrap/main.go
 
+test:
+	go test -v ./...
+
 .PHONY: tag
 tag:
 	-git tag v$(VERSION)
