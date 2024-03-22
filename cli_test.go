@@ -1,9 +1,21 @@
 package ssmwrap
 
 import (
+	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
+
+func mustAbsPath(t *testing.T, path string) string {
+	abs, err := filepath.Abs(path)
+	if err != nil {
+		t.Fatalf("failed to get absolute path: %s", err)
+	}
+
+	return abs
+}
 
 func TestFileTargetsParseFlag(t *testing.T) {
 	tests := []struct {
@@ -17,7 +29,7 @@ func TestFileTargetsParseFlag(t *testing.T) {
 			in:   "Name=/test/foo,Path=foo.txt,Mode=0600,Uid=1000,Gid=1000",
 			expected: &FileTarget{
 				Name: "/test/foo",
-				Path: "foo.txt",
+				Path: mustAbsPath(t, "foo.txt"),
 				Mode: 0600,
 				Uid:  1000,
 				Gid:  1000,
@@ -71,29 +83,13 @@ func TestFileTargetsParseFlag(t *testing.T) {
 				t.Fatalf("unexpected nil result")
 			}
 
-			if res.Name != test.expected.Name {
-				t.Errorf("unexpected Name: %s", res.Name)
-			}
-
-			absPath, err := targets.parsePath(test.expected.Path)
-			if err != nil {
-				t.Errorf("invalid expected path %s: %s", test.expected.Path, err)
-			}
-			if res.Path != absPath {
-				t.Errorf("unexpected Path: %s", res.Path)
-			}
-
-			if res.Mode != test.expected.Mode {
-				t.Errorf("unexpected Mode: %d", res.Mode)
-			}
-
-			if res.Uid != test.expected.Uid {
-				t.Errorf("unexpected Uid: %d", res.Uid)
-			}
-
-			if res.Gid != test.expected.Gid {
-				t.Errorf("unexpected Gid: %d", res.Gid)
+			if diff := cmp.Diff(test.expected, res); diff != "" {
+				t.Errorf("unexpected result: %s", diff)
 			}
 		})
+	}
+}
+
+
 	}
 }
