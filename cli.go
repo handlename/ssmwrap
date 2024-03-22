@@ -24,13 +24,30 @@ func (ts *FileTargets) String() string {
 }
 
 func (ts *FileTargets) Set(value string) error {
+	target, err := ts.parseFlag(value)
+	if err != nil {
+		return err
+	}
+
+	if err := target.IsSatisfied(); err != nil {
+		return fmt.Errorf("file parameter is not satisfied: %s", err)
+	}
+
+	*ts = append(*ts, *target)
+
+	return nil
+}
+
+func (ts FileTargets) parseFlag(value string) (*FileTarget, error) {
+	target := &FileTarget{}
 	parts := strings.Split(value, ",")
 
-	target := FileTarget{}
-
 	for _, part := range parts {
-		// TODO: validate parameter format. currently, invalid parameters will cause panic
-		param := strings.SplitN(part, "=", 2)
+		param := strings.Split(part, "=")
+		if len(param) != 2 {
+			return nil, fmt.Errorf("invalid format")
+		}
+
 		key := param[0]
 		value := param[1]
 
@@ -40,40 +57,33 @@ func (ts *FileTargets) Set(value string) error {
 		case "Path":
 			path, err := ts.checkPath(value)
 			if err != nil {
-				return fmt.Errorf("invalid Path: %s", err)
+				return nil, fmt.Errorf("invalid Path: %s", err)
 			}
 			target.Path = path
 		case "Mode":
 			mode, err := ts.checkMode(value)
 			if err != nil {
-				return fmt.Errorf("invalid Mode: %s", err)
+				return nil, fmt.Errorf("invalid Mode: %s", err)
 			}
 			target.Mode = mode
 		case "Uid":
 			uid, err := ts.checkUid(value)
 			if err != nil {
-				return fmt.Errorf("invalid Uid: %s", err)
+				return nil, fmt.Errorf("invalid Uid: %s", err)
 			}
 			target.Uid = uid
 		case "Gid":
 			gid, err := ts.checkGid(value)
 			if err != nil {
-				return fmt.Errorf("invalid Gid: %s", err)
+				return nil, fmt.Errorf("invalid Gid: %s", err)
 			}
 			target.Gid = gid
 		default:
-			return fmt.Errorf("unknown parameter: %s", key)
+			return nil, fmt.Errorf("unknown parameter: %s", key)
 		}
 	}
 
-	err := target.IsSatisfied()
-	if err != nil {
-		return fmt.Errorf("file parameter is not satisfied: %s", err)
-	}
-
-	*ts = append(*ts, target)
-
-	return nil
+	return target, nil
 }
 
 func (ts FileTargets) checkPath(value string) (string, error) {
