@@ -3,9 +3,9 @@ package ssmwrap
 import (
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
-	"path/filepath"
 )
 
 func TestDestinationFileOutputSuccessAll(t *testing.T) {
