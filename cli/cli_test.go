@@ -1,4 +1,4 @@
-package ssmwrap
+package cli
 
 import (
 	"flag"
@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/handlename/ssmwrap"
 )
 
 func mustAbsPath(t *testing.T, path string) string {
@@ -22,12 +23,12 @@ func TestFileTargetsParseFlag(t *testing.T) {
 	tests := []struct {
 		name     string
 		in       string
-		expected *FileTarget
+		expected *ssmwrap.FileTarget
 	}{
 		{
 			name: "valid",
 			in:   "Name=/test/foo,Path=foo.txt,Mode=0600,Uid=1000,Gid=1000",
-			expected: &FileTarget{
+			expected: &ssmwrap.FileTarget{
 				Name: "/test/foo",
 				Path: mustAbsPath(t, "foo.txt"),
 				Mode: 0600,
@@ -37,7 +38,7 @@ func TestFileTargetsParseFlag(t *testing.T) {
 		},
 	}
 
-	targets := FileTargetFlags{}
+	targets := FileFlags{}
 
 	for _, test := range tests {
 		test := test
@@ -91,7 +92,7 @@ func TestFileTargetsParseFlagRetunsError(t *testing.T) {
 		},
 	}
 
-	targets := FileTargetFlags{}
+	targets := FileFlags{}
 
 	for _, test := range tests {
 		test := test
@@ -120,7 +121,7 @@ func TestParseFlag(t *testing.T) {
 		name     string
 		flags    []string
 		envs     map[string]string
-		expected *CLIFlags
+		expected *Flags
 	}{
 		{
 			name: "valid: flags",
@@ -133,7 +134,7 @@ func TestParseFlag(t *testing.T) {
 				"-env-prefix", "TEST_",
 				"-file", "Name=/foo/,Path=foo.txt,Mode=0600,Uid=1000,Gid=1000",
 			},
-			expected: &CLIFlags{
+			expected: &Flags{
 				VersionFlag: false,
 
 				Paths:           "/foo/",
@@ -147,7 +148,7 @@ func TestParseFlag(t *testing.T) {
 				EnvPrefix:        "TEST_",
 				EnvUseEntirePath: false,
 
-				FileTargets: FileTargetFlags{
+				FileTargets: FileFlags{
 					{
 						Name: "/foo/",
 						Path: mustAbsPath(t, "foo.txt"),
@@ -170,7 +171,7 @@ func TestParseFlag(t *testing.T) {
 				flagEnvPrefix + "FILE_1":    "Name=/foo/,Path=foo.txt,Mode=0600,Uid=1000,Gid=1000",
 				flagEnvPrefix + "FILE_2":    "Name=/bar/,Path=bar.txt,Mode=0600,Uid=2000,Gid=2000",
 			},
-			expected: &CLIFlags{
+			expected: &Flags{
 				VersionFlag: false,
 
 				Paths:           "/foo/",
@@ -184,7 +185,7 @@ func TestParseFlag(t *testing.T) {
 				EnvPrefix:        "TEST_",
 				EnvUseEntirePath: false,
 
-				FileTargets: FileTargetFlags{
+				FileTargets: FileFlags{
 					{
 						Name: "/foo/",
 						Path: mustAbsPath(t, "foo.txt"),
@@ -224,7 +225,7 @@ func TestParseFlag(t *testing.T) {
 				// multiple flags will be merged
 				"-file", "Name=/bar/,Path=bar.txt,Mode=0600,Uid=2000,Gid=2000",
 			},
-			expected: &CLIFlags{
+			expected: &Flags{
 				VersionFlag: false,
 
 				Paths:           "/foo/",
@@ -238,7 +239,7 @@ func TestParseFlag(t *testing.T) {
 				EnvPrefix:        "",
 				EnvUseEntirePath: false,
 
-				FileTargets: FileTargetFlags{
+				FileTargets: FileFlags{
 					{
 						Name: "/foo/",
 						Path: mustAbsPath(t, "foo.txt"),
@@ -271,7 +272,7 @@ func TestParseFlag(t *testing.T) {
 				}
 			}
 
-			parsedFlags, _, err := parseCLIFlags(test.flags, flagEnvPrefix)
+			parsedFlags, _, err := parseFlags(test.flags, flagEnvPrefix)
 			if err != nil {
 				t.Errorf("unexpected error: %s", err)
 			}

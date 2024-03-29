@@ -1,4 +1,4 @@
-package ssmwrap
+package cli
 
 import (
 	"context"
@@ -10,11 +10,13 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/handlename/ssmwrap"
 )
 
-type FileTargetFlags []FileTarget
+type FileFlags []ssmwrap.FileTarget
 
-func (ts *FileTargetFlags) String() string {
+func (ts *FileFlags) String() string {
 	s := ""
 
 	for _, t := range *ts {
@@ -24,7 +26,7 @@ func (ts *FileTargetFlags) String() string {
 	return s
 }
 
-func (ts *FileTargetFlags) Set(value string) error {
+func (ts *FileFlags) Set(value string) error {
 	target, err := ts.parseFlag(value)
 	if err != nil {
 		return err
@@ -39,8 +41,8 @@ func (ts *FileTargetFlags) Set(value string) error {
 	return nil
 }
 
-func (ts FileTargetFlags) parseFlag(value string) (*FileTarget, error) {
-	target := &FileTarget{}
+func (ts FileFlags) parseFlag(value string) (*ssmwrap.FileTarget, error) {
+	target := &ssmwrap.FileTarget{}
 	parts := strings.Split(value, ",")
 
 	for _, part := range parts {
@@ -87,7 +89,7 @@ func (ts FileTargetFlags) parseFlag(value string) (*FileTarget, error) {
 	return target, nil
 }
 
-func (ts FileTargetFlags) parsePath(value string) (string, error) {
+func (ts FileFlags) parsePath(value string) (string, error) {
 	// expand path
 	path, err := filepath.Abs(value)
 	if err != nil {
@@ -97,7 +99,7 @@ func (ts FileTargetFlags) parsePath(value string) (string, error) {
 	return path, nil
 }
 
-func (ts FileTargetFlags) parseMode(value string) (os.FileMode, error) {
+func (ts FileFlags) parseMode(value string) (os.FileMode, error) {
 	// convert `Mode` to os.FileMode
 	mode, err := strconv.ParseUint(value, 8, 32)
 	if err != nil {
@@ -107,7 +109,7 @@ func (ts FileTargetFlags) parseMode(value string) (os.FileMode, error) {
 	return os.FileMode(mode), nil
 }
 
-func (ts FileTargetFlags) parseGid(value string) (int, error) {
+func (ts FileFlags) parseGid(value string) (int, error) {
 	gid, err := strconv.Atoi(value)
 	if err != nil {
 		return 0, fmt.Errorf("invalid Gid")
@@ -116,7 +118,7 @@ func (ts FileTargetFlags) parseGid(value string) (int, error) {
 	return gid, nil
 }
 
-func (ts FileTargetFlags) parseUid(value string) (int, error) {
+func (ts FileFlags) parseUid(value string) (int, error) {
 	uid, err := strconv.Atoi(value)
 	if err != nil {
 		return 0, fmt.Errorf("invalid Uid")
@@ -125,7 +127,7 @@ func (ts FileTargetFlags) parseUid(value string) (int, error) {
 	return uid, nil
 }
 
-func cliFlagViaEnv(prefix string, multiple bool) []string {
+func flagViaEnv(prefix string, multiple bool) []string {
 	if multiple {
 		values := []string{}
 
@@ -154,7 +156,7 @@ func cliFlagViaEnv(prefix string, multiple bool) []string {
 	return []string{os.Getenv(prefix)}
 }
 
-type CLIFlags struct {
+type Flags struct {
 	VersionFlag bool
 
 	// general
@@ -171,11 +173,11 @@ type CLIFlags struct {
 	EnvUseEntirePath bool
 
 	// for destination: file
-	FileTargets FileTargetFlags
+	FileTargets FileFlags
 }
 
-func parseCLIFlags(args []string, flagEnvPrefix string) (*CLIFlags, []string, error) {
-	flags := &CLIFlags{}
+func parseFlags(args []string, flagEnvPrefix string) (*Flags, []string, error) {
+	flags := &Flags{}
 
 	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 
@@ -209,7 +211,7 @@ func parseCLIFlags(args []string, flagEnvPrefix string) (*CLIFlags, []string, er
 		envName = strings.ReplaceAll(envName, "-", "_")
 		envName = flagEnvPrefix + envName
 
-		for _, value := range cliFlagViaEnv(envName, multiple) {
+		for _, value := range flagViaEnv(envName, multiple) {
 			f.Value.Set(value)
 		}
 	})
@@ -221,9 +223,9 @@ func parseCLIFlags(args []string, flagEnvPrefix string) (*CLIFlags, []string, er
 	return flags, fs.Args(), nil
 }
 
-// RunCLI runs ssmwrap as a CLI, returns exit code.
-func RunCLI(version string, flagEnvPrefix string) int {
-	flags, restArgs, err := parseCLIFlags(os.Args[1:], flagEnvPrefix)
+// Run runs ssmwrap as a CLI, returns exit code.
+func Run(version string, flagEnvPrefix string) int {
+	flags, restArgs, err := parseFlags(os.Args[1:], flagEnvPrefix)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s", err)
 		return 2
@@ -234,7 +236,7 @@ func RunCLI(version string, flagEnvPrefix string) int {
 		return 0
 	}
 
-	options := RunOptions{
+	options := ssmwrap.RunOptions{
 		Recursive: !flags.NoRecursiveFlag,
 		Retries:   flags.Retries,
 		Command:   restArgs,
@@ -251,18 +253,18 @@ func RunCLI(version string, flagEnvPrefix string) int {
 		options.Names = strings.Split(flags.Names, ",")
 	}
 
-	ssm := DefaultSSMConnector{}
-	dests := []Destination{}
+	ssm := ssmwrap.DefaultSSMConnector{}
+	dests := []ssmwrap.Destination{}
 
 	if !flags.EnvNoOutputFlag {
-		dests = append(dests, DestinationEnv{
+		dests = append(dests, ssmwrap.DestinationEnv{
 			Prefix:        flags.EnvPrefix,
 			UseEntirePath: flags.EnvUseEntirePath,
 		})
 	}
 
 	if 0 < len(flags.FileTargets) {
-		dests = append(dests, DestinationFile{
+		dests = append(dests, ssmwrap.DestinationFile{
 			Targets: flags.FileTargets,
 		})
 		for _, t := range flags.FileTargets {
@@ -272,7 +274,7 @@ func RunCLI(version string, flagEnvPrefix string) int {
 
 	ctx := context.TODO()
 
-	if err := Run(ctx, options, ssm, dests); err != nil {
+	if err := ssmwrap.Run(ctx, options, ssm, dests); err != nil {
 		fmt.Fprintf(os.Stderr, "%s", err)
 		return 1
 	}

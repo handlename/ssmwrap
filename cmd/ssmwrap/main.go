@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/handlename/ssmwrap"
+	"github.com/handlename/ssmwrap/cli"
 )
 
 var version string
@@ -11,5 +11,5 @@ var version string
 const FlagEnvPrefix = "SSMWRAP_"
 
 func main() {
-	os.Exit(ssmwrap.RunCLI(version, FlagEnvPrefix))
+	os.Exit(cli.Run(version, FlagEnvPrefix))
 }
