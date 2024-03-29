@@ -23,7 +23,6 @@ func TestFileTargetsParseFlag(t *testing.T) {
 		name     string
 		in       string
 		expected *FileTarget
-		err      string
 	}{
 		{
 			name: "valid",
@@ -36,6 +35,36 @@ func TestFileTargetsParseFlag(t *testing.T) {
 				Gid:  1000,
 			},
 		},
+	}
+
+	targets := FileTargetFlags{}
+
+	for _, test := range tests {
+		test := test
+
+		t.Run(test.name, func(t *testing.T) {
+			res, err := targets.parseFlag(test.in)
+			if err != nil {
+				t.Errorf("unexpected error: %s", err)
+			}
+
+			if res == nil {
+				t.Fatalf("unexpected nil result")
+			}
+
+			if diff := cmp.Diff(test.expected, res); diff != "" {
+				t.Errorf("unexpected result: %s", diff)
+			}
+		})
+	}
+}
+
+func TestFileTargetsParseFlagRetunsError(t *testing.T) {
+	tests := []struct {
+		name string
+		in   string
+		err  string
+	}{
 		{
 			name: "invalid form",
 			in:   "foobar",
@@ -69,25 +98,16 @@ func TestFileTargetsParseFlag(t *testing.T) {
 
 		t.Run(test.name, func(t *testing.T) {
 			res, err := targets.parseFlag(test.in)
-			if err != nil {
-				if test.err != "" {
-					if strings.Contains(err.Error(), test.err) {
-						// expected error, ok
-						return
-					} else {
-						t.Errorf("error must be %s but %s", test.err, err)
-					}
-				} else {
-					t.Errorf("unexpected error: %s", err)
-				}
+			if err == nil {
+				t.Fatalf("expected error but got nil")
 			}
 
-			if res == nil {
+			if !strings.Contains(err.Error(), test.err) {
+				t.Errorf("error must be %s but %s", test.err, err)
+			}
+
+			if res != nil {
 				t.Fatalf("unexpected nil result")
-			}
-
-			if diff := cmp.Diff(test.expected, res); diff != "" {
-				t.Errorf("unexpected result: %s", diff)
 			}
 		})
 	}
@@ -101,7 +121,6 @@ func TestParseFlag(t *testing.T) {
 		flags    []string
 		envs     map[string]string
 		expected *CLIFlags
-		err      string
 	}{
 		{
 			name: "valid: flags",
@@ -254,16 +273,7 @@ func TestParseFlag(t *testing.T) {
 
 			parsedFlags, _, err := parseCLIFlags(test.flags, flagEnvPrefix)
 			if err != nil {
-				if test.err != "" {
-					if strings.Contains(err.Error(), test.err) {
-						// expected error, ok
-						return
-					} else {
-						t.Errorf("error must be %s but %s", test.err, err)
-					}
-				} else {
-					t.Errorf("unexpected error: %s", err)
-				}
+				t.Errorf("unexpected error: %s", err)
 			}
 
 			if diff := cmp.Diff(test.expected, parsedFlags); diff != "" {
