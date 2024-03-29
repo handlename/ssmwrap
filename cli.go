@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -130,13 +131,21 @@ func cliFlagViaEnv(prefix string, multiple bool) []string {
 
 		// read values named like `{prefix}_FOO_123`
 		re := regexp.MustCompile("^" + prefix + `(_\d+)?$`)
+		keys := []string{}
 
 		for _, env := range os.Environ() {
 			parts := strings.SplitN(env, "=", 2)
 
 			if re.FindString(parts[0]) != "" {
-				values = append(values, parts[1])
+				keys = append(keys, parts[0])
 			}
+		}
+
+		// sort keys for test stability
+		sort.Strings(keys)
+
+		for _, key := range keys {
+			values = append(values, os.Getenv(key))
 		}
 
 		return values
@@ -145,92 +154,118 @@ func cliFlagViaEnv(prefix string, multiple bool) []string {
 	return []string{os.Getenv(prefix)}
 }
 
-// RunCLI runs ssmwrap as a CLI, returns exit code.
-func RunCLI(version string, flagEnvPrefix string) int {
-	var (
-		paths           string
-		names           string
-		recursiveFlag   bool
-		noRecursiveFlag bool
-		retries         int
+type CLIFlags struct {
+	VersionFlag bool
 
-		envOutputFlag    bool
-		envNoOutputFlag  bool
-		envPrefix        string
-		envUseEntirePath bool
+	// general
+	Paths           string
+	Names           string
+	RecursiveFlag   bool
+	NoRecursiveFlag bool
+	Retries         int
 
-		fileTargets FileTargetFlags
+	// for destination: env
+	EnvOutputFlag    bool
+	EnvNoOutputFlag  bool
+	EnvPrefix        string
+	EnvUseEntirePath bool
 
-		versionFlag bool
-	)
+	// for destination: file
+	FileTargets FileTargetFlags
+}
 
-	flag.StringVar(&paths, "paths", "", "comma separated parameter paths")
-	flag.StringVar(&names, "names", "", "comma separated parameter names")
-	flag.BoolVar(&recursiveFlag, "recursive", true, "retrieve values recursively")
-	flag.BoolVar(&noRecursiveFlag, "no-recursive", false, "retrieve values just under -paths only")
-	flag.IntVar(&retries, "retries", 0, "number of times of retry")
+func parseCLIFlags(args []string, flagEnvPrefix string) (*CLIFlags, []string, error) {
+	flags := &CLIFlags{}
 
-	flag.BoolVar(&envOutputFlag, "env", true, "export values as environment variables")
-	flag.BoolVar(&envNoOutputFlag, "no-env", false, "disable export to environment variables")
-	flag.StringVar(&envPrefix, "env-prefix", "", "prefix for environment variables")
-	flag.BoolVar(&envUseEntirePath, "env-entire-path", false, "use entire parameter path for name of environment variables\ndisabled: /path/to/value -> VALUE\nenabled: /path/to/value -> PATH_TO_VALUE")
-	flag.StringVar(&envPrefix, "prefix", "", "alias for -env-prefix")
+	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 
-	flag.Var(&fileTargets, "file", "write values as file\nformat:  Name=VALUE_NAME,Path=FILE_PATH,Mode=FILE_MODE,Gid=FILE_GROUP_ID,Uid=FILE_USER_ID\nexample: Name=/foo/bar,Path=/etc/bar,Mode=600,Gid=123,Uid=456")
+	fs.BoolVar(&flags.VersionFlag, "version", false, "display version")
 
-	flag.BoolVar(&versionFlag, "version", false, "display version")
-	flag.VisitAll(func(f *flag.Flag) {
-		// read flag values also from environment variable e.g. {flagEnvPrefix}_PATHS
+	fs.StringVar(&flags.Paths, "paths", "", "comma separated parameter paths")
+	fs.StringVar(&flags.Names, "names", "", "comma separated parameter names")
+	fs.BoolVar(&flags.RecursiveFlag, "recursive", true, "retrieve values recursively")
+	fs.BoolVar(&flags.NoRecursiveFlag, "no-recursive", false, "retrieve values just under -paths only")
+	fs.IntVar(&flags.Retries, "retries", 0, "number of times of retry")
 
+	fs.BoolVar(&flags.EnvOutputFlag, "env", true, "export values as environment variables")
+	fs.BoolVar(&flags.EnvNoOutputFlag, "no-env", false, "disable export to environment variables")
+	fs.StringVar(&flags.EnvPrefix, "env-prefix", "", "prefix for environment variables")
+	fs.BoolVar(&flags.EnvUseEntirePath, "env-entire-path", false, "use entire parameter path for name of environment variables\ndisabled: /path/to/value -> VALUE\nenabled: /path/to/value -> PATH_TO_VALUE")
+	fs.StringVar(&flags.EnvPrefix, "prefix", "", "alias for -env-prefix")
+
+	fs.Var(&flags.FileTargets, "file", "write values into file\nformat:  Name=VALUE_NAME,Path=FILE_PATH,Mode=FILE_MODE,Gid=FILE_GROUP_ID,Uid=FILE_USER_ID\nexample: Name=/foo/bar,Path=/etc/bar,Mode=600,Gid=123,Uid=456")
+
+	// Read flag values also from environment variable e.g. {flagEnvPrefix}_PATHS
+	// Environment variables will be overwritten by flags.
+	// Multiple values will be merged.
+	fs.VisitAll(func(f *flag.Flag) {
 		multiple := false
 
 		if f.Name == "file" {
 			multiple = true
 		}
 
-		for _, value := range cliFlagViaEnv(flagEnvPrefix+strings.ToUpper(f.Name), multiple) {
+		envName := strings.ToUpper(f.Name)
+		envName = strings.ReplaceAll(envName, "-", "_")
+		envName = flagEnvPrefix + envName
+
+		for _, value := range cliFlagViaEnv(envName, multiple) {
 			f.Value.Set(value)
 		}
 	})
-	flag.Parse()
 
-	if versionFlag {
+	if err := fs.Parse(args); err != nil {
+		return nil, nil, err
+	}
+
+	return flags, fs.Args(), nil
+}
+
+// RunCLI runs ssmwrap as a CLI, returns exit code.
+func RunCLI(version string, flagEnvPrefix string) int {
+	flags, restArgs, err := parseCLIFlags(os.Args[1:], flagEnvPrefix)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%s", err)
+		return 2
+	}
+
+	if flags.VersionFlag {
 		fmt.Printf("ssmwrap v%s\n", version)
 		return 0
 	}
 
 	options := RunOptions{
-		Recursive: !noRecursiveFlag,
-		Retries:   retries,
-		Command:   flag.Args(),
+		Recursive: !flags.NoRecursiveFlag,
+		Retries:   flags.Retries,
+		Command:   restArgs,
 	}
 	if len(options.Command) == 0 {
 		fmt.Fprintln(os.Stderr, "command required in arguments")
 		return 2
 	}
 
-	if paths != "" {
-		options.Paths = strings.Split(paths, ",")
+	if flags.Paths != "" {
+		options.Paths = strings.Split(flags.Paths, ",")
 	}
-	if names != "" {
-		options.Names = strings.Split(names, ",")
+	if flags.Names != "" {
+		options.Names = strings.Split(flags.Names, ",")
 	}
 
 	ssm := DefaultSSMConnector{}
 	dests := []Destination{}
 
-	if !envNoOutputFlag {
+	if !flags.EnvNoOutputFlag {
 		dests = append(dests, DestinationEnv{
-			Prefix:        envPrefix,
-			UseEntirePath: envUseEntirePath,
+			Prefix:        flags.EnvPrefix,
+			UseEntirePath: flags.EnvUseEntirePath,
 		})
 	}
 
-	if 0 < len(fileTargets) {
+	if 0 < len(flags.FileTargets) {
 		dests = append(dests, DestinationFile{
-			Targets: fileTargets,
+			Targets: flags.FileTargets,
 		})
-		for _, t := range fileTargets {
+		for _, t := range flags.FileTargets {
 			options.Names = append(options.Names, t.Name)
 		}
 	}
