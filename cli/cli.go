@@ -48,15 +48,13 @@ type Flags struct {
 	VersionFlag bool
 
 	// general
-	Paths           string
-	Names           string
-	RecursiveFlag   bool
-	NoRecursiveFlag bool
-	Retries         int
+	Paths     string
+	Names     string
+	Recursive bool
+	Retries   int
 
 	// for destination: env
-	EnvOutputFlag    bool
-	EnvNoOutputFlag  bool
+	EnvOutput        bool
 	EnvPrefix        string
 	EnvUseEntirePath bool
 
@@ -73,12 +71,10 @@ func parseFlags(args []string, flagEnvPrefix string) (*Flags, []string, error) {
 
 	fs.StringVar(&flags.Paths, "paths", "", "comma separated parameter paths")
 	fs.StringVar(&flags.Names, "names", "", "comma separated parameter names")
-	fs.BoolVar(&flags.RecursiveFlag, "recursive", true, "retrieve values recursively")
-	fs.BoolVar(&flags.NoRecursiveFlag, "no-recursive", false, "retrieve values just under -paths only")
+	fs.BoolVar(&flags.Recursive, "recursive", false, "retrieve values recursively")
 	fs.IntVar(&flags.Retries, "retries", 0, "number of times of retry")
 
-	fs.BoolVar(&flags.EnvOutputFlag, "env", true, "export values as environment variables")
-	fs.BoolVar(&flags.EnvNoOutputFlag, "no-env", false, "disable export to environment variables")
+	fs.BoolVar(&flags.EnvOutput, "env", false, "export values as environment variables")
 	fs.StringVar(&flags.EnvPrefix, "env-prefix", "", "prefix for environment variables")
 	fs.BoolVar(&flags.EnvUseEntirePath, "env-entire-path", false, "use entire parameter path for name of environment variables\ndisabled: /path/to/value -> VALUE\nenabled: /path/to/value -> PATH_TO_VALUE")
 	fs.StringVar(&flags.EnvPrefix, "prefix", "", "alias for -env-prefix")
@@ -125,7 +121,7 @@ func Run(version string, flagEnvPrefix string) int {
 	}
 
 	options := ssmwrap.RunOptions{
-		Recursive: !flags.NoRecursiveFlag,
+		Recursive: flags.Recursive,
 		Retries:   flags.Retries,
 		Command:   restArgs,
 	}
@@ -144,7 +140,7 @@ func Run(version string, flagEnvPrefix string) int {
 	ssm := ssmwrap.DefaultSSMConnector{}
 	dests := []ssmwrap.Destination{}
 
-	if !flags.EnvNoOutputFlag {
+	if flags.EnvOutput {
 		dests = append(dests, ssmwrap.DestinationEnv{
 			Prefix:        flags.EnvPrefix,
 			UseEntirePath: flags.EnvUseEntirePath,

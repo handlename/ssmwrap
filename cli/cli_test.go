@@ -40,14 +40,12 @@ func TestParseFlag(t *testing.T) {
 			expected: &Flags{
 				VersionFlag: false,
 
-				Paths:           "/foo/",
-				Names:           "foo,bar",
-				RecursiveFlag:   true,
-				NoRecursiveFlag: false,
-				Retries:         3,
+				Paths:     "/foo/",
+				Names:     "foo,bar",
+				Recursive: true,
+				Retries:   3,
 
-				EnvOutputFlag:    true,
-				EnvNoOutputFlag:  false,
+				EnvOutput:        true,
 				EnvPrefix:        "TEST_",
 				EnvUseEntirePath: false,
 
@@ -77,14 +75,12 @@ func TestParseFlag(t *testing.T) {
 			expected: &Flags{
 				VersionFlag: false,
 
-				Paths:           "/foo/",
-				Names:           "foo,bar",
-				RecursiveFlag:   true,
-				NoRecursiveFlag: false,
-				Retries:         3,
+				Paths:     "/foo/",
+				Names:     "foo,bar",
+				Recursive: true,
+				Retries:   3,
 
-				EnvOutputFlag:    true,
-				EnvNoOutputFlag:  false,
+				EnvOutput:        true,
 				EnvPrefix:        "TEST_",
 				EnvUseEntirePath: false,
 
@@ -131,14 +127,12 @@ func TestParseFlag(t *testing.T) {
 			expected: &Flags{
 				VersionFlag: false,
 
-				Paths:           "/foo/",
-				Names:           "foo,bar",
-				RecursiveFlag:   false,
-				NoRecursiveFlag: false,
-				Retries:         3,
+				Paths:     "/foo/",
+				Names:     "foo,bar",
+				Recursive: false,
+				Retries:   3,
 
-				EnvOutputFlag:    false,
-				EnvNoOutputFlag:  false,
+				EnvOutput:        false,
 				EnvPrefix:        "",
 				EnvUseEntirePath: false,
 
