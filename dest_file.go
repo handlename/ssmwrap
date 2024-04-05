@@ -2,7 +2,6 @@ package ssmwrap
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 )
 
@@ -19,7 +18,7 @@ func (d DestinationFile) Name() string {
 
 func (d DestinationFile) Output(parameters map[string]string) error {
 	for _, target := range d.Targets {
-		err := ioutil.WriteFile(target.Path, []byte(parameters[target.Name]), target.Mode)
+		err := os.WriteFile(target.Path, []byte(parameters[target.Name]), target.Mode)
 		if err != nil {
 			return fmt.Errorf("failed to write to file %s: %w", target.Path, err)
 		}
