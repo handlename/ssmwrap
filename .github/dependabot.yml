@@ -4,7 +4,6 @@ updates:
   directory: "/"
   schedule:
     interval: monthly
-    time: "20:00"
   open-pull-requests-limit: 10
   groups:
     aws-sdk-go-v2:
