@@ -2,12 +2,15 @@ package cli
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
+	"os/signal"
 	"regexp"
 	"sort"
 	"strings"
+	"syscall"
 
 	"github.com/handlename/ssmwrap"
 )
@@ -157,10 +160,16 @@ func Run(version string, flagEnvPrefix string) int {
 		}
 	}
 
-	ctx := context.TODO()
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT)
+	defer stop()
 
 	if err := ssmwrap.Run(ctx, options, ssm, dests); err != nil {
-		fmt.Fprintf(os.Stderr, "%s", err)
+		if errors.Is(err, context.Canceled) {
+			fmt.Fprintf(os.Stderr, "Interrupted\n")
+		} else {
+			fmt.Fprintf(os.Stderr, "Erorr occurred: %s", err)
+		}
+
 		return 1
 	}
 
