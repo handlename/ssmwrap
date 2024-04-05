@@ -1,7 +1,7 @@
 package ssmwrap
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -47,7 +47,7 @@ func TestDestinationFileOutputSuccessAll(t *testing.T) {
 			t.Errorf("failed to open target file: %s", err)
 		}
 
-		body, err := ioutil.ReadAll(f)
+		body, err := io.ReadAll(f)
 		if err != nil {
 			t.Errorf("failed to read body from file: %s", err)
 		}
@@ -59,7 +59,7 @@ func TestDestinationFileOutputSuccessAll(t *testing.T) {
 }
 
 func TestDestinationFileOutputFailedToWrite(t *testing.T) {
-	tempDirPath, err := ioutil.TempDir("", "test")
+	tempDirPath, err := os.MkdirTemp("", "test")
 	if err != nil {
 		t.Errorf("failed to create tempdir: %s", err)
 	}
@@ -88,7 +88,7 @@ func TestDestinationFileOutputFailedToWrite(t *testing.T) {
 }
 
 func makeTempfileName(t *testing.T) string {
-	tmpdir, err := ioutil.TempDir("", "")
+	tmpdir, err := os.MkdirTemp("", "")
 	if err != nil {
 		t.Errorf("failed to create temp dir: %s", err)
 	}
