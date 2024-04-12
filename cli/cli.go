@@ -115,6 +115,8 @@ func parseFlags(args []string, flagEnvPrefix string) (*Flags, []string, error) {
 
 // Run runs ssmwrap as a CLI, returns exit code.
 func Run(version string, flagEnvPrefix string) int {
+	ssmwrap.InitLogger()
+
 	flags, restArgs, err := parseFlags(os.Args[1:], flagEnvPrefix)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s", err)
