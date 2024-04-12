@@ -79,7 +79,13 @@ func parseFlags(args []string, flagEnvPrefix string) (*Flags, []string, error) {
 	fs.BoolVar(&flags.EnvUseEntirePath, "env-entire-path", false, "use entire parameter path for name of environment variables\ndisabled: /path/to/value -> VALUE\nenabled: /path/to/value -> PATH_TO_VALUE")
 	fs.StringVar(&flags.EnvPrefix, "prefix", "", "alias for -env-prefix")
 
-	fs.Var(&flags.FileTargets, "file", "write values into file\nformat:  Name=VALUE_NAME,Path=FILE_PATH,Mode=FILE_MODE,Gid=FILE_GROUP_ID,Uid=FILE_USER_ID\nexample: Name=/foo/bar,Path=/etc/bar,Mode=600,Gid=123,Uid=456")
+	// for destination: file
+	fs.Var(&flags.FileTargets, "file", strings.Join([]string{
+		"write values into file. multiple flags are allowed.",
+		"format: Name=VALUE_NAME,Dest=FILE_PATH,Mode=FILE_MODE[,Gid=FILE_GROUP_ID][,Uid=FILE_USER_ID]",
+		"        write value of VALUE_NAME into FILE_PATH with FILE_MODE.",
+		"        if no Gid and Uid, current user's Gid and Uid will be used.",
+	}, "\n"))
 
 	// Read flag values also from environment variable e.g. {flagEnvPrefix}_PATHS
 	// Environment variables will be overwritten by flags.

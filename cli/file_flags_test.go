@@ -16,10 +16,10 @@ func TestFileTargetsParseFlag(t *testing.T) {
 	}{
 		{
 			name: "valid",
-			in:   "Name=/test/foo,Path=foo.txt,Mode=0600,Uid=1000,Gid=1000",
+			in:   "Name=/test/foo,Dest=foo.txt,Mode=0600,Uid=1000,Gid=1000",
 			expected: &ssmwrap.FileTarget{
 				Name: "/test/foo",
-				Path: mustAbsPath(t, "foo.txt"),
+				Dest: mustAbsPath(t, "foo.txt"),
 				Mode: 0600,
 				Uid:  1000,
 				Gid:  1000,
@@ -62,21 +62,21 @@ func TestFileTargetsParseFlagRetunsError(t *testing.T) {
 		},
 		// how to cause error by filepath.Abs?
 		// {
-		// 	name: "invalid Path",
+		// 	name: "invalid Dest",
 		// },
 		{
 			name: "invalid Mode",
-			in:   "Name=/test/foo,Path=foo.txt,Mode=foo,Uid=1000,Gid=1000",
+			in:   "Name=/test/foo,Dest=foo.txt,Mode=foo,Uid=1000,Gid=1000",
 			err:  "invalid Mode",
 		},
 		{
 			name: "invalid Uid",
-			in:   "Name=/test/foo,Path=foo.txt,Mode=0600,Uid=bar,Gid=1000",
+			in:   "Name=/test/foo,Dest=foo.txt,Mode=0600,Uid=bar,Gid=1000",
 			err:  "invalid Uid",
 		},
 		{
 			name: "invalid Gid",
-			in:   "Name=/test/foo,Path=foo.txt,Mode=0600,Uid=1000,Gid=buzz",
+			in:   "Name=/test/foo,Dest=foo.txt,Mode=0600,Uid=1000,Gid=buzz",
 			err:  "invalid Gid",
 		},
 	}

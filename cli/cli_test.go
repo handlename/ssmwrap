@@ -35,7 +35,7 @@ func TestParseFlag(t *testing.T) {
 				"-recursive",
 				"-retries", "3",
 				"-env-prefix", "TEST_",
-				"-file", "Name=/foo/,Path=foo.txt,Mode=0600,Uid=1000,Gid=1000",
+				"-file", "Name=/foo/,Dest=foo.txt,Mode=0600,Uid=1000,Gid=1000",
 			},
 			expected: &Flags{
 				VersionFlag: false,
@@ -52,7 +52,7 @@ func TestParseFlag(t *testing.T) {
 				FileTargets: FileFlags{
 					{
 						Name: "/foo/",
-						Path: mustAbsPath(t, "foo.txt"),
+						Dest: mustAbsPath(t, "foo.txt"),
 						Mode: 0600,
 						Uid:  1000,
 						Gid:  1000,
@@ -69,8 +69,8 @@ func TestParseFlag(t *testing.T) {
 				flagEnvPrefix + "RECURSIVE": "1",
 				flagEnvPrefix + "RETRIES":   "3",
 				flagEnvPrefix + "PREFIX":    "TEST_",
-				flagEnvPrefix + "FILE_1":    "Name=/foo/,Path=foo.txt,Mode=0600,Uid=1000,Gid=1000",
-				flagEnvPrefix + "FILE_2":    "Name=/bar/,Path=bar.txt,Mode=0600,Uid=2000,Gid=2000",
+				flagEnvPrefix + "FILE_1":     "Name=/foo/,Dest=foo.txt,Mode=0600,Uid=1000,Gid=1000",
+				flagEnvPrefix + "FILE_2":     "Name=/bar/,Dest=bar.txt,Mode=0600,Uid=2000,Gid=2000",
 			},
 			expected: &Flags{
 				VersionFlag: false,
@@ -87,14 +87,14 @@ func TestParseFlag(t *testing.T) {
 				FileTargets: FileFlags{
 					{
 						Name: "/foo/",
-						Path: mustAbsPath(t, "foo.txt"),
+						Dest: mustAbsPath(t, "foo.txt"),
 						Mode: 0600,
 						Uid:  1000,
 						Gid:  1000,
 					},
 					{
 						Name: "/bar/",
-						Path: mustAbsPath(t, "bar.txt"),
+						Dest: mustAbsPath(t, "bar.txt"),
 						Mode: 0600,
 						Uid:  2000,
 						Gid:  2000,
@@ -112,7 +112,7 @@ func TestParseFlag(t *testing.T) {
 				flagEnvPrefix + "PATHS": "/bar/",
 
 				// multiple envs will be merged
-				flagEnvPrefix + "FILE": "Name=/foo/,Path=foo.txt,Mode=0600,Uid=1000,Gid=1000",
+				flagEnvPrefix + "FILE": "Name=/foo/,Dest=foo.txt,Mode=0600,Uid=1000,Gid=1000",
 			},
 			flags: []string{
 				// only by flags
@@ -122,7 +122,7 @@ func TestParseFlag(t *testing.T) {
 				"-paths", "/foo/",
 
 				// multiple flags will be merged
-				"-file", "Name=/bar/,Path=bar.txt,Mode=0600,Uid=2000,Gid=2000",
+				"-file", "Name=/bar/,Dest=bar.txt,Mode=0600,Uid=2000,Gid=2000",
 			},
 			expected: &Flags{
 				VersionFlag: false,
@@ -139,14 +139,14 @@ func TestParseFlag(t *testing.T) {
 				FileTargets: FileFlags{
 					{
 						Name: "/foo/",
-						Path: mustAbsPath(t, "foo.txt"),
+						Dest: mustAbsPath(t, "foo.txt"),
 						Mode: 0600,
 						Uid:  1000,
 						Gid:  1000,
 					},
 					{
 						Name: "/bar/",
-						Path: mustAbsPath(t, "bar.txt"),
+						Dest: mustAbsPath(t, "bar.txt"),
 						Mode: 0600,
 						Uid:  2000,
 						Gid:  2000,

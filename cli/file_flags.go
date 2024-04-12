@@ -53,12 +53,12 @@ func (ts FileFlags) parseFlag(value string) (*ssmwrap.FileTarget, error) {
 		switch key {
 		case "Name":
 			target.Name = value
-		case "Path":
-			path, err := ts.parsePath(value)
+		case "Dest":
+			dest, err := ts.parseDest(value)
 			if err != nil {
-				return nil, fmt.Errorf("invalid Path: %s", err)
+				return nil, fmt.Errorf("invalid Dest: %s", err)
 			}
-			target.Path = path
+			target.Dest = dest
 		case "Mode":
 			mode, err := ts.parseMode(value)
 			if err != nil {
@@ -85,14 +85,14 @@ func (ts FileFlags) parseFlag(value string) (*ssmwrap.FileTarget, error) {
 	return target, nil
 }
 
-func (ts FileFlags) parsePath(value string) (string, error) {
-	// expand path
-	path, err := filepath.Abs(value)
+func (ts FileFlags) parseDest(value string) (string, error) {
+	// expand destination path
+	dest, err := filepath.Abs(value)
 	if err != nil {
-		return "", fmt.Errorf("Invalid Path")
+		return "", fmt.Errorf("Invalid Dest")
 	}
 
-	return path, nil
+	return dest, nil
 }
 
 func (ts FileFlags) parseMode(value string) (os.FileMode, error) {

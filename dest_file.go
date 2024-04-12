@@ -18,9 +18,9 @@ func (d DestinationFile) Name() string {
 
 func (d DestinationFile) Output(parameters map[string]string) error {
 	for _, target := range d.Targets {
-		err := os.WriteFile(target.Path, []byte(parameters[target.Name]), target.Mode)
+		err := os.WriteFile(target.Dest, []byte(parameters[target.Name]), target.Mode)
 		if err != nil {
-			return fmt.Errorf("failed to write to file %s: %w", target.Path, err)
+			return fmt.Errorf("failed to write to file %s: %w", target.Dest, err)
 		}
 
 		uid := target.Uid
@@ -33,9 +33,9 @@ func (d DestinationFile) Output(parameters map[string]string) error {
 			gid = os.Getgid()
 		}
 
-		err = os.Chown(target.Path, uid, gid)
+		err = os.Chown(target.Dest, uid, gid)
 		if err != nil {
-			return fmt.Errorf("failed to chown file %s: %w", target.Path, err)
+			return fmt.Errorf("failed to chown file %s: %w", target.Dest, err)
 		}
 	}
 
@@ -44,7 +44,7 @@ func (d DestinationFile) Output(parameters map[string]string) error {
 
 type FileTarget struct {
 	Name string
-	Path string
+	Dest string
 	Mode os.FileMode
 	Uid  int
 	Gid  int
@@ -55,7 +55,7 @@ func (t FileTarget) IsSatisfied() error {
 		return fmt.Errorf("Name is required")
 	}
 
-	if t.Path == "" {
+	if t.Dest == "" {
 		return fmt.Errorf("Path is required")
 	}
 
@@ -63,5 +63,5 @@ func (t FileTarget) IsSatisfied() error {
 }
 
 func (t FileTarget) String() string {
-	return fmt.Sprintf("Name=%s,Path=%s,Mode=%d,Uid=%d,Gid=%d", t.Name, t.Path, t.Mode, t.Uid, t.Gid)
+	return fmt.Sprintf("Name=%s,Path=%s,Mode=%d,Uid=%d,Gid=%d", t.Name, t.Dest, t.Mode, t.Uid, t.Gid)
 }

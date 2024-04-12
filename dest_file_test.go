@@ -13,14 +13,14 @@ func TestDestinationFileOutputSuccessAll(t *testing.T) {
 		// parameter exists -> file its content is parameter value will be created
 		{
 			Name: "foo",
-			Path: makeTempfileName(t),
+			Dest: makeTempfileName(t),
 			Mode: 0600,
 		},
 
 		// parameter not exists -> empty file will be created
 		{
 			Name: "bar",
-			Path: makeTempfileName(t),
+			Dest: makeTempfileName(t),
 			Mode: 0600,
 		},
 	}
@@ -40,9 +40,9 @@ func TestDestinationFileOutputSuccessAll(t *testing.T) {
 	}
 
 	for _, target := range targets {
-		t.Logf("'%s' to %s", parameters[target.Name], target.Path)
+		t.Logf("'%s' to %s", parameters[target.Name], target.Dest)
 
-		f, err := os.Open(target.Path)
+		f, err := os.Open(target.Dest)
 		if err != nil {
 			t.Errorf("failed to open target file: %s", err)
 		}
@@ -71,7 +71,7 @@ func TestDestinationFileOutputFailedToWrite(t *testing.T) {
 		Targets: []FileTarget{
 			{
 				Name: "foo",
-				Path: tempDirPath, // directory!!
+				Dest: tempDirPath, // directory!!
 				Mode: 0600,
 			},
 		},
