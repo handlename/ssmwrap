@@ -22,6 +22,10 @@ func NewFileExporter(path string) *FileExporter {
 	}
 }
 
+func (e FileExporter) Address() string {
+	return e.Path
+}
+
 func (e FileExporter) Export(v string) error {
 	err := os.WriteFile(e.Path, []byte(v), e.Mode)
 	if err != nil {

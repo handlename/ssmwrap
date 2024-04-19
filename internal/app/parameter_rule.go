@@ -20,3 +20,18 @@ type ParameterRule struct {
 	// Level means how deep the path should be searched.
 	Level ParameterLevel
 }
+
+func (r ParameterRule) String() string {
+	s := r.Path
+
+	switch r.Level {
+	case ParameterLevelStrict:
+		// do nothing
+	case ParameterLevelUnder:
+		s += "*"
+	case ParameterLevelAll:
+		s += "**/*"
+	}
+
+	return s
+}

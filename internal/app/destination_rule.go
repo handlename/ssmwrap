@@ -1,5 +1,10 @@
 package app
 
+import (
+	"fmt"
+	"io/fs"
+)
+
 type DestinationType string
 
 const (
@@ -17,6 +22,19 @@ type DestinationRule struct {
 	TypeFileOptions *DestinationTypeFileOptions
 }
 
+func (r DestinationRule) String() string {
+	s := "to=" + r.To
+
+	switch r.Type {
+	case DestinationTypeEnv:
+		s += fmt.Sprintf(" (%s %+v)", r.Type, r.TypeEnvOptions)
+	case DestinationTypeFile:
+		s += fmt.Sprintf(" (%s %+v)", r.Type, r.TypeFileOptions)
+	}
+
+	return s
+}
+
 type DestinationTypeEnvOptions struct {
 	// Prefix is a prefix for environment variable.
 	// For example, if Prefix is PREFIX, then the environment variable name will be PREFIX_NAME.
@@ -31,7 +49,7 @@ type DestinationTypeEnvOptions struct {
 type DestinationTypeFileOptions struct {
 	// Mode is a file mode of exported file.
 	// If Mode is 0, then the default file mode is used defined in FileExporter.
-	Mode int
+	Mode fs.FileMode
 
 	// Uid is a user id of exported file.
 	// If Uid is 0, then the default user id is used defined in FileExporter.
