@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
 	"github.com/samber/lo"
@@ -75,6 +76,23 @@ func (c *ParameterStore) Store(ctx context.Context, rules []ParameterRule) error
 	return nil
 }
 
+func (c ParameterStore) Retrieve(path string, level ParameterLevel) ([]Parameter, error) {
+	switch level {
+	case ParameterLevelStrict:
+		if param := c.FindByName(path); param == nil {
+			return []Parameter{}, nil
+		} else {
+			return []Parameter{*param}, nil
+		}
+	case ParameterLevelUnder:
+		return c.SearchByPath(path, false), nil
+	case ParameterLevelAll:
+		return c.SearchByPath(path, true), nil
+	default:
+		return nil, fmt.Errorf("invalid ParameterLevel: %d", level)
+	}
+}
+
 func (c ParameterStore) FindByName(name string) *Parameter {
 	params := lo.Filter(c.Parameters, func(p Parameter, _ int) bool {
 		return p.Path == name
@@ -89,7 +107,19 @@ func (c ParameterStore) FindByName(name string) *Parameter {
 	return &params[0]
 }
 
-func (c ParameterStore) SearchByPath(path string) []Parameter {
-	// TODO
-	return []Parameter{}
+func (c ParameterStore) SearchByPath(path string, recursive bool) []Parameter {
+	return lo.Filter(c.Parameters, func(p Parameter, _ int) bool {
+		if !strings.HasPrefix(p.Path, path) {
+			return false
+		}
+
+		if !recursive {
+			rest := strings.Replace(p.Path, path, "", 1)
+			if strings.Contains(rest, "/") {
+				return false
+			}
+		}
+
+		return true
+	})
 }

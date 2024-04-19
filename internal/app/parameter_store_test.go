@@ -75,3 +75,69 @@ func TestParameterStoreStore(t *testing.T) {
 		t.Errorf("Store() has diff:\n%s", diff)
 	}
 }
+
+func TestParameterStoreRetrieve(t *testing.T) {
+	paramAttrs := map[string]string{
+		"/foo/v1":   "this is /foo/v1",
+		"/bar/v1":   "this is /bar/v1",
+		"/bar/v2":   "this is /bar/v2",
+		"/bar/a/v3": "this is /bar/a/v3",
+	}
+
+	params := []Parameter{}
+	for p, v := range paramAttrs {
+		params = append(params, Parameter{
+			Path:  p,
+			Value: v,
+		})
+	}
+
+	store := ParameterStore{
+		Parameters: params,
+	}
+
+	tests := []struct {
+		title string
+		path  string
+		level ParameterLevel
+		want  []Parameter
+	}{
+		{
+			title: "strict",
+			path:  "/bar/a/v3",
+			level: ParameterLevelStrict,
+			want: []Parameter{
+				{Path: "/bar/a/v3", Value: paramAttrs["/bar/a/v3"]},
+			},
+		},
+		{
+			title: "under",
+			path:  "/bar/",
+			level: ParameterLevelUnder,
+			want: []Parameter{
+				{Path: "/bar/v1", Value: paramAttrs["/bar/v1"]},
+				{Path: "/bar/v2", Value: paramAttrs["/bar/v2"]},
+			},
+		},
+		{
+			title: "all",
+			path:  "/bar/",
+			level: ParameterLevelAll,
+			want: []Parameter{
+				{Path: "/bar/v1", Value: paramAttrs["/bar/v1"]},
+				{Path: "/bar/v2", Value: paramAttrs["/bar/v2"]},
+				{Path: "/bar/a/v3", Value: paramAttrs["/bar/a/v3"]},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.title, func(t *testing.T) {
+			got, _ := store.Retrieve(tt.path, tt.level)
+
+			if diff := cmp.Diff(got, tt.want); diff != "" {
+				t.Errorf("Retrieve() has diff:\n%s", diff)
+			}
+		})
+	}
+}
