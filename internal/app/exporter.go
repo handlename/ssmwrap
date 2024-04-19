@@ -1,5 +1,5 @@
 package app
 
-type Target interface {
+type Exporter interface {
 	Export(value string) error
 }
