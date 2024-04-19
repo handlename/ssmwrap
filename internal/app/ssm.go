@@ -1,4 +1,4 @@
-package ssmwrap
+package app
 
 import (
 	"context"
@@ -8,6 +8,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
 )
+
+type SSMConnector interface {
+	fetchParametersByPaths(ctx context.Context, client *ssm.Client, paths []string, recursive bool) (map[string]string, error)
+	fetchParametersByNames(ctx context.Context, client *ssm.Client, names []string) (map[string]string, error)
+}
 
 type DefaultSSMConnector struct{}
 
@@ -79,7 +84,7 @@ func (c DefaultSSMConnector) fetchParametersByNames(ctx context.Context, client 
 	return params, nil
 }
 
-func newSSMClient(ctx context.Context, retries int) (*ssm.Client, error) {
+func NewSSMClient(ctx context.Context, retries int) (*ssm.Client, error) {
 	opts := []func(*config.LoadOptions) error{}
 
 	if 0 < retries {
