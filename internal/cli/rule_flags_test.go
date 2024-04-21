@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -69,7 +70,7 @@ func TestRuleFlagsSetSuccess(t *testing.T) {
 		},
 		{
 			title: "type env with options",
-			value: "path=/path/to/param,type=env,to=MY_PARAM,prefix=PREFIX_,entirepath=true",
+			value: "path=/path/to/param,type=env,prefix=PREFIX_,entirepath=true",
 			want: app.Rule{
 				ParameterRule: app.ParameterRule{
 					Path:  "/path/to/param",
@@ -77,7 +78,7 @@ func TestRuleFlagsSetSuccess(t *testing.T) {
 				},
 				DestinationRule: app.DestinationRule{
 					Type: app.DestinationTypeEnv,
-					To:   "MY_PARAM",
+					To:   "",
 					TypeEnvOptions: &app.DestinationTypeEnvOptions{
 						Prefix:     "PREFIX_",
 						EntirePath: true,
@@ -139,6 +140,129 @@ func TestRuleFlagsSetSuccess(t *testing.T) {
 
 			if diff := cmp.Diff(tt.want, f[0]); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestRuleFlagsSetReturnsError(t *testing.T) {
+	tests := []struct {
+		title string
+		value string
+		err   string
+	}{
+		{
+			title: "type: required",
+			value: "path=/path/to/param",
+			err:   "invalid `type`",
+		},
+		{
+			title: "path: invalid suffix",
+			value: "path=/path/to/param/**,type=env",
+			err:   "invalid `path` format",
+		},
+		{
+			title: "path: invalid prefix",
+			value: "path=path/to/param,type=env",
+			err:   "invalid `path` format",
+		},
+		{
+			title: "path: end with `/*` is not allowed for `type=file`",
+			value: "path=/path/to/param/*,type=file,to=/path/to/file",
+			err:   "not allowed for `type=file`",
+		},
+		{
+			title: "path: end with `/**/*` not allowed for `type=file`",
+			value: "path=/path/to/param/**/*,type=file,to=/path/to/file",
+			err:   "not allowed for `type=file`",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.title, func(t *testing.T) {
+			var f RuleFlags
+			err := f.Set(tt.value)
+			if err == nil {
+				t.Fatalf("should be error")
+			}
+
+			if !strings.Contains(err.Error(), tt.err) {
+				t.Errorf("unexpected error: '%s' is not contains '%s'", err, tt.err)
+			}
+		})
+	}
+}
+
+func TestRuleFlagsCheckOptionsCombinations(t *testing.T) {
+	tests := []struct {
+		title    string
+		destType app.DestinationType
+		opts     map[string]string
+		err      string
+	}{
+		{
+			title:    "prefix: only for `type=env`",
+			destType: app.DestinationTypeFile,
+			opts: map[string]string{
+				"to":     "/path/to/file",
+				"prefix": "PREFIX_",
+			},
+			err: "`prefix` is only allowed for `type=env`",
+		},
+		{
+			title:    "entirepath: only for `type=env`",
+			destType: app.DestinationTypeFile,
+			opts: map[string]string{
+				"to":         "/path/to/file",
+				"entirepath": "true",
+			},
+			err: "`entirepath` is only allowed for `type=env`",
+		},
+		{
+			title:    "entirepath: exclusive with `to`",
+			destType: app.DestinationTypeEnv,
+			opts: map[string]string{
+				"to":         "/path/to/file",
+				"entirepath": "true",
+			},
+			err: "can't use `to` with `entirepath`",
+		},
+		{
+			title:    "mode: only for `type=file`",
+			destType: app.DestinationTypeEnv,
+			opts: map[string]string{
+				"mode": "0644",
+			},
+			err: "is only allowed for `type=file`",
+		},
+		{
+			title:    "uid: only for `type=file`",
+			destType: app.DestinationTypeEnv,
+			opts: map[string]string{
+				"uid": "1000",
+			},
+			err: "is only allowed for `type=file`",
+		},
+		{
+			title:    "gid: only for `type=file`",
+			destType: app.DestinationTypeEnv,
+			opts: map[string]string{
+				"gid": "1000",
+			},
+			err: "is only allowed for `type=file`",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.title, func(t *testing.T) {
+			var f RuleFlags
+			err := f.checkOptionsCombinations(tt.destType, tt.opts)
+			if err == nil {
+				t.Fatalf("should be error")
+			}
+
+			if !strings.Contains(err.Error(), tt.err) {
+				t.Errorf("unexpected error: '%s' is not contains '%s'", err, tt.err)
 			}
 		})
 	}

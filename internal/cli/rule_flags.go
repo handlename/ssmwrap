@@ -3,11 +3,15 @@ package cli
 import (
 	"fmt"
 	"io/fs"
+	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/handlename/ssmwrap/internal/app"
+	"github.com/samber/lo"
 )
+
+var validPathRegexp = regexp.MustCompile(`^/[-_/a-zA-Z0-9]+((/\**)?/\*)?$`)
 
 type RuleFlags []app.Rule
 
@@ -65,6 +69,10 @@ func (f *RuleFlags) Set(value string) error {
 			return f.Errorf(value, "`to` is required for `type=file`")
 		}
 
+		if level != app.ParameterLevelStrict {
+			return f.Errorf(value, "`path` end with `/*` or `/**/*` is not allowed for `type=file`")
+		}
+
 		// TODO: check if `to` is valid as file path
 
 		rule.DestinationRule = app.DestinationRule{
@@ -109,6 +117,10 @@ func (f *RuleFlags) Set(value string) error {
 }
 
 func (f RuleFlags) parsePath(value string) (string, app.ParameterLevel, error) {
+	if !validPathRegexp.MatchString(value) {
+		return "", app.ParameterLevelStrict, fmt.Errorf("invalid `path` format")
+	}
+
 	if strings.HasSuffix(value, "/**/*") {
 		return value[:len(value)-4], app.ParameterLevelAll, nil
 	}
@@ -117,17 +129,40 @@ func (f RuleFlags) parsePath(value string) (string, app.ParameterLevel, error) {
 		return value[:len(value)-1], app.ParameterLevelUnder, nil
 	}
 
-	if strings.HasSuffix(value, "/") {
-		return "", app.ParameterLevelStrict, fmt.Errorf("path must not end with `/`")
-	}
-
-	if !strings.HasPrefix(value, "/") {
-		return "", app.ParameterLevelStrict, fmt.Errorf("path must start with `/`")
-	}
-
-	// TODO: validate if path not contains invalid characters
-
 	return value, app.ParameterLevelStrict, nil
+}
+
+func (f RuleFlags) checkOptionsCombinations(t app.DestinationType, opts map[string]string) error {
+	for _, key := range lo.Keys(opts) {
+		switch key {
+		case "prefix":
+			if t != app.DestinationTypeEnv {
+				return f.Errorf(key, "`prefix` is only allowed for `type=env`")
+			}
+		case "entirepath":
+			if t != app.DestinationTypeEnv {
+				return f.Errorf(key, "`entirepath` is only allowed for `type=env`")
+			}
+
+			if _, ok := opts["to"]; ok {
+				return f.Errorf(key, "can't use `to` with `entirepath` in same time")
+			}
+		case "mode":
+			if t != app.DestinationTypeFile {
+				return f.Errorf(key, "`mode` is only allowed for `type=file`")
+			}
+		case "uid":
+			if t != app.DestinationTypeFile {
+				return f.Errorf(key, "`uid` is only allowed for `type=file`")
+			}
+		case "gid":
+			if t != app.DestinationTypeFile {
+				return f.Errorf(key, "`gid` is only allowed for `type=file`")
+			}
+		}
+	}
+
+	return nil
 }
 
 func (f RuleFlags) Errorf(value, format string, args ...interface{}) error {
