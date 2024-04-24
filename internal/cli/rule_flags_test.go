@@ -134,11 +134,11 @@ func TestRuleFlagsSetSuccess(t *testing.T) {
 				t.Fatalf("unexpected error: %s", err)
 			}
 
-			if len(f) != 1 {
-				t.Fatalf("unexpected length: %d", len(f))
+			if len(f.Rules) != 1 {
+				t.Fatalf("unexpected length: %d", len(f.Rules))
 			}
 
-			if diff := cmp.Diff(tt.want, f[0]); diff != "" {
+			if diff := cmp.Diff(tt.want, f.Rules[0]); diff != "" {
 				t.Errorf("unexpected diff:\n%s", diff)
 			}
 		})
