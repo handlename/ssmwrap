@@ -11,6 +11,10 @@ type Rule struct {
 	DestinationRule DestinationRule
 }
 
+func (r Rule) String() string {
+	return fmt.Sprintf("rule[%s -> %s]", r.ParameterRule.String(), r.DestinationRule.String())
+}
+
 func (r Rule) Execute(store ParameterStore) error {
 	params, err := store.Retrieve(r.ParameterRule.Path, r.ParameterRule.Level)
 	if err != nil {

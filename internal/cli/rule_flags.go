@@ -17,6 +17,17 @@ type RuleFlags struct {
 	Rules []app.Rule
 }
 
+func (f RuleFlags) String() string {
+	ss := make([]string, len(f.Rules)+2)
+	ss = append(ss, "[")
+	for _, r := range f.Rules {
+		ss = append(ss, r.String())
+	}
+	ss = append(ss, "]")
+
+	return strings.Join(ss, " ")
+}
+
 func (f *RuleFlags) Set(value string) error {
 	opts, err := f.parseValue(value)
 	if err != nil {
