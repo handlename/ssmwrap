@@ -65,5 +65,5 @@ type DestinationTypeFileOptions struct {
 }
 
 func (o DestinationTypeFileOptions) String() string {
-	return fmt.Sprintf("mode=%d,uid=%d,gid=%d", o.Mode, o.Uid, o.Gid)
+	return fmt.Sprintf("mode=%04o,uid=%d,gid=%d", o.Mode, o.Uid, o.Gid)
 }
