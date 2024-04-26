@@ -56,3 +56,53 @@ func TestRuleString(t *testing.T) {
 		})
 	}
 }
+
+func TestRuleBuildEnvName(t *testing.T) {
+	tests := []struct {
+		title      string
+		path       string
+		prefix     string
+		entirePath bool
+		want       string
+	}{
+		{
+			title:      "no options",
+			path:       "/path/to/param",
+			prefix:     "",
+			entirePath: false,
+			want:       "PARAM",
+		},
+		{
+			title:      "with prefix",
+			path:       "/path/to/param",
+			prefix:     "TEST_",
+			entirePath: false,
+			want:       "TEST_PARAM",
+		},
+		{
+			title:      "entire path",
+			path:       "/path/to/param",
+			prefix:     "",
+			entirePath: true,
+			want:       "PATH_TO_PARAM",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.title, func(t *testing.T) {
+			rule := Rule{
+				DestinationRule: DestinationRule{
+					TypeEnvOptions: &DestinationTypeEnvOptions{
+						Prefix:     tt.prefix,
+						EntirePath: tt.entirePath,
+					},
+				},
+			}
+
+			got := rule.buildEnvName(tt.path)
+			if got != tt.want {
+				t.Errorf("got %s, want %s", got, tt.want)
+			}
+		})
+	}
+}
