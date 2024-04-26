@@ -12,7 +12,23 @@ type Rule struct {
 }
 
 func (r Rule) String() string {
-	return fmt.Sprintf("rule[%s -> %s]", r.ParameterRule.String(), r.DestinationRule.String())
+	ss := []string{
+		"path=" + r.ParameterRule.String(),
+		"type=" + string(r.DestinationRule.Type),
+	}
+
+	if r.DestinationRule.To != "" {
+		ss = append(ss, "to="+r.DestinationRule.To)
+	}
+
+	switch r.DestinationRule.Type {
+	case DestinationTypeEnv:
+		ss = append(ss, r.DestinationRule.TypeEnvOptions.String())
+	case DestinationTypeFile:
+		ss = append(ss, r.DestinationRule.TypeFileOptions.String())
+	}
+
+	return strings.Join(ss, ",")
 }
 
 func (r Rule) Execute(store ParameterStore) error {

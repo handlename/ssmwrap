@@ -46,6 +46,10 @@ type DestinationTypeEnvOptions struct {
 	EntirePath bool
 }
 
+func (o DestinationTypeEnvOptions) String() string {
+	return fmt.Sprintf("prefix=%s,entirepath=%t", o.Prefix, o.EntirePath)
+}
+
 type DestinationTypeFileOptions struct {
 	// Mode is a file mode of exported file.
 	// If Mode is 0, then the default file mode is used defined in FileExporter.
@@ -58,4 +62,8 @@ type DestinationTypeFileOptions struct {
 	// Gid is a group id of exported file.
 	// If Gid is 0, then the default group id is used defined in FileExporter.
 	Gid int
+}
+
+func (o DestinationTypeFileOptions) String() string {
+	return fmt.Sprintf("mode=%d,uid=%d,gid=%d", o.Mode, o.Uid, o.Gid)
 }
