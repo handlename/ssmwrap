@@ -3,52 +3,48 @@ package ssmwrap
 import (
 	"context"
 	"fmt"
+
+	"github.com/handlename/ssmwrap/internal/app"
 )
 
 type ExportOptions struct {
 	Paths         []string
-	Names         []string
 	Prefix        string
 	UseEntirePath bool
-	Recursive     bool
 	Retries       int
 }
 
-// Export fetches paramters from SSM and export those to environment variables.
+// Export fetches parameters from SSM and export those to environment variables.
 // This is for use ssmwrap as a library.
 func Export(ctx context.Context, options ExportOptions) error {
-	ssm := DefaultSSMConnector{}
-	dest := DestinationEnv{
-		Prefix:        options.Prefix,
-		UseEntirePath: options.UseEntirePath,
-	}
+	rules := make([]app.Rule, 0, len(options.Paths))
 
-	parameters := map[string]string{}
-	client, err := newSSMClient(ctx, options.Retries)
-	if err != nil {
-		return err
-	}
-
-	{
-		p, err := ssm.fetchParametersByPaths(ctx, client, options.Paths, options.Recursive)
+	for _, path := range options.Paths {
+		pr, err := app.NewParameterRule(path)
 		if err != nil {
-			return fmt.Errorf("failed to fetch parameters from SSM: %w", err)
+			return fmt.Errorf("failed to create ParameterRule: %w", err)
 		}
-		for key, value := range p {
-			parameters[key] = value
-		}
+
+		rules = append(rules, app.Rule{
+			ParameterRule: *pr,
+			DestinationRule: app.DestinationRule{
+				Type: app.DestinationTypeEnv,
+				TypeEnvOptions: &app.DestinationTypeEnvOptions{
+					Prefix:     options.Prefix,
+					EntirePath: options.UseEntirePath,
+				},
+			},
+		})
 	}
 
-	{
-		p, err := ssm.fetchParametersByNames(ctx, client, options.Names)
-		if err != nil {
-			return fmt.Errorf("failed to fetch parameters from SSM: %w", err)
-		}
-		for key, value := range p {
-			parameters[key] = value
-		}
+	sw := app.NewSSMWrap()
+	if options.Retries != 0 {
+		sw.Retries = options.Retries
 	}
 
-	envVars := dest.formatParametersAsEnvVars(parameters)
-	return dest.export(envVars)
+	if err := sw.Export(ctx, rules); err != nil {
+		return fmt.Errorf("failed to export parameters: %w", err)
+	}
+
+	return nil
 }
