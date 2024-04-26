@@ -61,6 +61,7 @@ func (f RuleFlags) parseValue(value string) (map[string]string, error) {
 }
 
 func (f RuleFlags) buildRule(opts map[string]string) (*app.Rule, error) {
+
 	rule := &app.Rule{}
 
 	if _, ok := opts["path"]; !ok {
@@ -79,6 +80,10 @@ func (f RuleFlags) buildRule(opts map[string]string) (*app.Rule, error) {
 
 	switch opts["type"] {
 	case string(app.DestinationTypeEnv):
+		if err := f.checkOptionsCombinations(app.DestinationTypeEnv, opts); err != nil {
+			return nil, err
+		}
+
 		rule.DestinationRule = app.DestinationRule{
 			Type:           app.DestinationTypeEnv,
 			To:             opts["to"],
@@ -98,6 +103,10 @@ func (f RuleFlags) buildRule(opts map[string]string) (*app.Rule, error) {
 			rule.DestinationRule.TypeEnvOptions.EntirePath = entirePath
 		}
 	case string(app.DestinationTypeFile):
+		if err := f.checkOptionsCombinations(app.DestinationTypeFile, opts); err != nil {
+			return nil, err
+		}
+
 		if _, ok := opts["to"]; !ok {
 			return nil, fmt.Errorf("`to` is required for `type=file`")
 		}
