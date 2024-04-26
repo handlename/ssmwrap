@@ -2,10 +2,14 @@ package cli
 
 import (
 	"flag"
+	"fmt"
 	"path/filepath"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/handlename/ssmwrap/internal/app"
+	"github.com/handlename/ssmwrap/internal/cli"
+	"github.com/samber/lo"
 )
 
 func mustAbsPath(t *testing.T, path string) string {
@@ -20,6 +24,41 @@ func mustAbsPath(t *testing.T, path string) string {
 func TestParseFlag(t *testing.T) {
 	flagEnvPrefix := "SSMWRAP_TEST_"
 
+	envRules := lo.Times(3, func(i int) app.Rule {
+		return app.Rule{
+			ParameterRule: app.ParameterRule{
+				Path:  fmt.Sprintf("/path/to/env/param%d/", i),
+				Level: app.ParameterLevelUnder,
+			},
+			DestinationRule: app.DestinationRule{
+				Type: app.DestinationTypeEnv,
+				To:   "",
+				TypeEnvOptions: &app.DestinationTypeEnvOptions{
+					Prefix:     "",
+					EntirePath: false,
+				},
+			},
+		}
+	})
+
+	fileRules := lo.Times(3, func(i int) app.Rule {
+		return app.Rule{
+			ParameterRule: app.ParameterRule{
+				Path:  fmt.Sprintf("/path/to/file/param%d/", i),
+				Level: app.ParameterLevelStrict,
+			},
+			DestinationRule: app.DestinationRule{
+				Type: app.DestinationTypeFile,
+				To:   fmt.Sprintf("/path/to/file%d", i),
+				TypeFileOptions: &app.DestinationTypeFileOptions{
+					Mode: 0,
+					Uid:  0,
+					Gid:  0,
+				},
+			},
+		}
+	})
+
 	tests := []struct {
 		name     string
 		flags    []string
@@ -29,33 +68,37 @@ func TestParseFlag(t *testing.T) {
 		{
 			name: "valid: flags",
 			flags: []string{
-				"-env",
-				"-paths", "/foo/",
-				"-names", "foo,bar",
-				"-recursive",
 				"-retries", "3",
-				"-env-prefix", "TEST_",
-				"-file", "Name=/foo/,Dest=foo.txt,Mode=0600,Uid=1000,Gid=1000",
+				"-rule", envRules[0].String(),
+				"-rule", fileRules[0].String(),
+				"-env", envRules[1].String(),
+				"-env", envRules[2].String(),
+				"-file", fileRules[1].String(),
+				"-file", fileRules[2].String(),
 			},
 			expected: &Flags{
 				VersionFlag: false,
-
-				Paths:     "/foo/",
-				Names:     "foo,bar",
-				Recursive: true,
-				Retries:   3,
-
-				EnvOutput:        true,
-				EnvPrefix:        "TEST_",
-				EnvUseEntirePath: false,
-
-				FileTargets: FileFlags{
-					{
-						Name: "/foo/",
-						Dest: mustAbsPath(t, "foo.txt"),
-						Mode: 0600,
-						Uid:  1000,
-						Gid:  1000,
+				Retries:     3,
+				RuleFlags: cli.RuleFlags{
+					Rules: []app.Rule{
+						envRules[0],
+						fileRules[0],
+					},
+				},
+				EnvFlags: cli.EnvFlags{
+					RuleFlags: cli.RuleFlags{
+						Rules: []app.Rule{
+							envRules[1],
+							envRules[2],
+						},
+					},
+				},
+				FileFlags: cli.FileFlags{
+					RuleFlags: cli.RuleFlags{
+						Rules: []app.Rule{
+							fileRules[1],
+							fileRules[2],
+						},
 					},
 				},
 			},
@@ -63,118 +106,107 @@ func TestParseFlag(t *testing.T) {
 		{
 			name: "valid: envs",
 			envs: map[string]string{
-				flagEnvPrefix + "ENV":       "1",
-				flagEnvPrefix + "PATHS":     "/foo/",
-				flagEnvPrefix + "NAMES":     "foo,bar",
-				flagEnvPrefix + "RECURSIVE": "1",
-				flagEnvPrefix + "RETRIES":   "3",
-				flagEnvPrefix + "PREFIX":    "TEST_",
-				flagEnvPrefix + "FILE_1":     "Name=/foo/,Dest=foo.txt,Mode=0600,Uid=1000,Gid=1000",
-				flagEnvPrefix + "FILE_2":     "Name=/bar/,Dest=bar.txt,Mode=0600,Uid=2000,Gid=2000",
+				flagEnvPrefix + "RULE_1": envRules[0].String(),
+				flagEnvPrefix + "RULE_2": fileRules[0].String(),
+				flagEnvPrefix + "ENV_1":  envRules[1].String(),
+				flagEnvPrefix + "ENV_2":  envRules[2].String(),
+				flagEnvPrefix + "FILE_1": fileRules[1].String(),
+				flagEnvPrefix + "FILE_2": fileRules[2].String(),
 			},
 			expected: &Flags{
 				VersionFlag: false,
-
-				Paths:     "/foo/",
-				Names:     "foo,bar",
-				Recursive: true,
-				Retries:   3,
-
-				EnvOutput:        true,
-				EnvPrefix:        "TEST_",
-				EnvUseEntirePath: false,
-
-				FileTargets: FileFlags{
-					{
-						Name: "/foo/",
-						Dest: mustAbsPath(t, "foo.txt"),
-						Mode: 0600,
-						Uid:  1000,
-						Gid:  1000,
+				Retries:     0,
+				RuleFlags: cli.RuleFlags{
+					Rules: []app.Rule{
+						envRules[0],
+						fileRules[0],
 					},
-					{
-						Name: "/bar/",
-						Dest: mustAbsPath(t, "bar.txt"),
-						Mode: 0600,
-						Uid:  2000,
-						Gid:  2000,
+				},
+				EnvFlags: cli.EnvFlags{
+					RuleFlags: cli.RuleFlags{
+						Rules: []app.Rule{
+							envRules[1],
+							envRules[2],
+						},
+					},
+				},
+				FileFlags: cli.FileFlags{
+					RuleFlags: cli.RuleFlags{
+						Rules: []app.Rule{
+							fileRules[1],
+							fileRules[2],
+						},
 					},
 				},
 			},
 		},
 		{
 			name: "valid: flags & envs",
-			envs: map[string]string{
-				// only by envs
-				flagEnvPrefix + "NAMES": "foo,bar",
-
-				// will be overwriten by flags
-				flagEnvPrefix + "PATHS": "/bar/",
-
-				// multiple envs will be merged
-				flagEnvPrefix + "FILE": "Name=/foo/,Dest=foo.txt,Mode=0600,Uid=1000,Gid=1000",
-			},
 			flags: []string{
-				// only by flags
+				// will overwrite env
 				"-retries", "3",
 
-				// flags overwrites env
-				"-paths", "/foo/",
+				// will be merged
+				"-rule", fileRules[0].String(),
+				"-env", envRules[1].String(),
+				"-file", fileRules[1].String(),
+			},
+			envs: map[string]string{
+				// will be overwritten by flag
+				flagEnvPrefix + "RETRIES": "5",
 
-				// multiple flags will be merged
-				"-file", "Name=/bar/,Dest=bar.txt,Mode=0600,Uid=2000,Gid=2000",
+				// will be merged
+				flagEnvPrefix + "RULE": envRules[0].String(),
+				flagEnvPrefix + "ENV":  envRules[2].String(),
+				flagEnvPrefix + "FILE": fileRules[2].String(),
 			},
 			expected: &Flags{
 				VersionFlag: false,
-
-				Paths:     "/foo/",
-				Names:     "foo,bar",
-				Recursive: false,
-				Retries:   3,
-
-				EnvOutput:        false,
-				EnvPrefix:        "",
-				EnvUseEntirePath: false,
-
-				FileTargets: FileFlags{
-					{
-						Name: "/foo/",
-						Dest: mustAbsPath(t, "foo.txt"),
-						Mode: 0600,
-						Uid:  1000,
-						Gid:  1000,
+				Retries:     3,
+				RuleFlags: cli.RuleFlags{
+					Rules: []app.Rule{
+						envRules[0],
+						fileRules[0],
 					},
-					{
-						Name: "/bar/",
-						Dest: mustAbsPath(t, "bar.txt"),
-						Mode: 0600,
-						Uid:  2000,
-						Gid:  2000,
+				},
+				EnvFlags: cli.EnvFlags{
+					RuleFlags: cli.RuleFlags{
+						Rules: []app.Rule{
+							envRules[2],
+							envRules[1],
+						},
+					},
+				},
+				FileFlags: cli.FileFlags{
+					RuleFlags: cli.RuleFlags{
+						Rules: []app.Rule{
+							fileRules[2],
+							fileRules[1],
+						},
 					},
 				},
 			},
 		},
 	}
 
-	for _, test := range tests {
-		test := test
-
-		t.Run(test.name, func(t *testing.T) {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
 			// reset flags
 			flag.CommandLine = flag.NewFlagSet("ssmwrap", flag.ExitOnError)
 
-			if test.envs != nil {
-				for k, v := range test.envs {
+			if tt.envs != nil {
+				for k, v := range tt.envs {
 					t.Setenv(k, v)
 				}
 			}
 
-			parsedFlags, _, err := parseFlags(test.flags, flagEnvPrefix)
+			parsedFlags, _, err := parseFlags(tt.flags, flagEnvPrefix)
 			if err != nil {
 				t.Errorf("unexpected error: %s", err)
 			}
 
-			if diff := cmp.Diff(test.expected, parsedFlags); diff != "" {
+			// test.expected.FixOrder()
+			if diff := cmp.Diff(tt.expected, parsedFlags); diff != "" {
 				t.Errorf("unexpected result: %s", diff)
 			}
 		})

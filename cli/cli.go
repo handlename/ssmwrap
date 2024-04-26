@@ -13,6 +13,8 @@ import (
 	"syscall"
 
 	"github.com/handlename/ssmwrap"
+	"github.com/handlename/ssmwrap/internal/app"
+	"github.com/handlename/ssmwrap/internal/cli"
 )
 
 func flagViaEnv(prefix string, multiple bool) []string {
@@ -46,20 +48,11 @@ func flagViaEnv(prefix string, multiple bool) []string {
 
 type Flags struct {
 	VersionFlag bool
+	Retries     int
 
-	// general
-	Paths     string
-	Names     string
-	Recursive bool
-	Retries   int
-
-	// for destination: env
-	EnvOutput        bool
-	EnvPrefix        string
-	EnvUseEntirePath bool
-
-	// for destination: file
-	FileTargets FileFlags
+	RuleFlags cli.RuleFlags
+	EnvFlags  cli.EnvFlags
+	FileFlags cli.FileFlags
 }
 
 func parseFlags(args []string, flagEnvPrefix string) (*Flags, []string, error) {
@@ -67,25 +60,39 @@ func parseFlags(args []string, flagEnvPrefix string) (*Flags, []string, error) {
 
 	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 
-	fs.BoolVar(&flags.VersionFlag, "version", false, "display version")
-
-	fs.StringVar(&flags.Paths, "paths", "", "comma separated parameter paths")
-	fs.StringVar(&flags.Names, "names", "", "comma separated parameter names")
-	fs.BoolVar(&flags.Recursive, "recursive", false, "retrieve values recursively")
-	fs.IntVar(&flags.Retries, "retries", 0, "number of times of retry")
-
-	fs.BoolVar(&flags.EnvOutput, "env", false, "export values as environment variables")
-	fs.StringVar(&flags.EnvPrefix, "env-prefix", "", "prefix for environment variables")
-	fs.BoolVar(&flags.EnvUseEntirePath, "env-entire-path", false, "use entire parameter path for name of environment variables\ndisabled: /path/to/value -> VALUE\nenabled: /path/to/value -> PATH_TO_VALUE")
-	fs.StringVar(&flags.EnvPrefix, "prefix", "", "alias for -env-prefix")
-
-	// for destination: file
-	fs.Var(&flags.FileTargets, "file", strings.Join([]string{
-		"write values into file. multiple flags are allowed.",
-		"format: Name=VALUE_NAME,Dest=FILE_PATH,Mode=FILE_MODE[,Gid=FILE_GROUP_ID][,Uid=FILE_USER_ID]",
-		"        write value of VALUE_NAME into FILE_PATH with FILE_MODE.",
-		"        if no Gid and Uid, current user's Gid and Uid will be used.",
+	fs.BoolVar(&flags.VersionFlag, "version", false, "Display version and exit")
+	fs.IntVar(&flags.Retries, "retries", 0, "Number of times of retry. Default is 0")
+	fs.Var(&flags.RuleFlags, "rule", strings.Join([]string{
+		"Set rule for exporting values. multiple flags are allowed.",
+		"format: path=...,type={env,file},to=...[,entirepath={true,false}][,prefix=...][,mode=...][,gid=...][,uid=...]",
+		"params:",
+		"        path: [required]",
+		"             Path of parameter store.",
+		"             If `path` ends with no-slash character, only the value of the path will be exported.",
+		"             If `path` ends with `/**/*`, all values under the path will be exported.",
+		"             If `path` ends with `/*`, only top level values under the path will be exported.",
+		"        type: [required]",
+		"             Destination type. `env` or `file`.",
+		"          to: [required for `type=file`]",
+		"             Destination path.",
+		"             If `type=env`, `to` is name of exported environment variable.",
+		"             If `type=env`, but `to` is not set, `path` will be used as name of exported environment variable.",
+		"             If `type=file`, `to` is path of file to write.",
+		"  entirepath: [optional, only for `type=env`]",
+		"             Export entire path as environment variable.",
+		"             If `entirepath=true`, all values under the path will be exported. (/path/to/param -> PATH_TO_PARAM)",
+		"             If `entirepath=false`, only top level values under the path will be exported. (/path/to/param -> PARAM)",
+		"      prefix: [optional, only for `type=env`]",
+		"             Prefix for exported environment variable.",
+		"        mode: [optional, only for `type=file`]",
+		"             File mode. Default is 0644.",
+		"          gid: [optional, only for `type=file`]",
+		"             Group ID of file. Default is current user's Gid.",
+		"          uid: [optional, only for `type=file`]",
+		"             User ID of file. Default is current user's Uid.",
 	}, "\n"))
+	fs.Var(&flags.EnvFlags, "env", "Alias of `rule` flag with `type=env`.")
+	fs.Var(&flags.FileFlags, "file", "Alias of `rule` flag with `type=file`.")
 
 	// Read flag values also from environment variable e.g. {flagEnvPrefix}_PATHS
 	// Environment variables will be overwritten by flags.
@@ -93,7 +100,8 @@ func parseFlags(args []string, flagEnvPrefix string) (*Flags, []string, error) {
 	fs.VisitAll(func(f *flag.Flag) {
 		multiple := false
 
-		if f.Name == "file" {
+		switch f.Name {
+		case "rule", "env", "file":
 			multiple = true
 		}
 
