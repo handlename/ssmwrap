@@ -11,5 +11,5 @@ var version string
 const FlagEnvPrefix = "SSMWRAP_"
 
 func main() {
-	os.Exit(cli.Run(version, FlagEnvPrefix))
+	os.Exit(int(cli.Run(version, FlagEnvPrefix)))
 }

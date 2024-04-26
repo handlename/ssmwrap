@@ -17,6 +17,13 @@ import (
 	"github.com/handlename/ssmwrap/internal/cli"
 )
 
+type ExitStatus int
+
+const (
+	ExitStatusOK    ExitStatus = 0
+	ExitStatusError ExitStatus = 1
+)
+
 func flagViaEnv(prefix string, multiple bool) []string {
 	if multiple {
 		values := []string{}
@@ -122,18 +129,18 @@ func parseFlags(args []string, flagEnvPrefix string) (*Flags, []string, error) {
 }
 
 // Run runs ssmwrap as a CLI, returns exit code.
-func Run(version string, flagEnvPrefix string) int {
+func Run(version string, flagEnvPrefix string) ExitStatus {
 	ssmwrap.InitLogger()
 
 	flags, restArgs, err := parseFlags(os.Args[1:], flagEnvPrefix)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s", err)
-		return 2
+		return ExitStatusError
 	}
 
 	if flags.VersionFlag {
 		fmt.Printf("ssmwrap v%s\n", version)
-		return 0
+		return ExitStatusOK
 	}
 
 	options := ssmwrap.RunOptions{
@@ -143,7 +150,7 @@ func Run(version string, flagEnvPrefix string) int {
 	}
 	if len(options.Command) == 0 {
 		fmt.Fprintln(os.Stderr, "command required in arguments")
-		return 2
+		return ExitStatusError
 	}
 
 	if flags.Paths != "" {
@@ -182,8 +189,8 @@ func Run(version string, flagEnvPrefix string) int {
 			fmt.Fprintf(os.Stderr, "Erorr occurred: %s", err)
 		}
 
-		return 1
+		return ExitStatusError
 	}
 
-	return 0
+	return ExitStatusOK
 }
