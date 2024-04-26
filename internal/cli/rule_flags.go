@@ -3,15 +3,12 @@ package cli
 import (
 	"fmt"
 	"io/fs"
-	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/handlename/ssmwrap/internal/app"
 	"github.com/samber/lo"
 )
-
-var validPathRegexp = regexp.MustCompile(`^/[-_/a-zA-Z0-9]+((/\**)?/\*)?$`)
 
 type RuleFlags struct {
 	Rules []app.Rule
@@ -68,14 +65,10 @@ func (f RuleFlags) buildRule(opts map[string]string) (*app.Rule, error) {
 		return nil, fmt.Errorf("`path` is required")
 	}
 
-	path, level, err := f.parsePath(opts["path"])
-	if err != nil {
+	if pr, err := app.NewParameterRule(opts["path"]); err != nil {
 		return nil, fmt.Errorf(err.Error())
-	}
-
-	rule.ParameterRule = app.ParameterRule{
-		Path:  path,
-		Level: level,
+	} else {
+		rule.ParameterRule = *pr
 	}
 
 	switch opts["type"] {
@@ -111,7 +104,7 @@ func (f RuleFlags) buildRule(opts map[string]string) (*app.Rule, error) {
 			return nil, fmt.Errorf("`to` is required for `type=file`")
 		}
 
-		if level != app.ParameterLevelStrict {
+		if rule.ParameterRule.Level != app.ParameterLevelStrict {
 			return nil, fmt.Errorf("`path` end with `/*` or `/**/*` is not allowed for `type=file`")
 		}
 
@@ -154,22 +147,6 @@ func (f RuleFlags) buildRule(opts map[string]string) (*app.Rule, error) {
 	}
 
 	return rule, nil
-}
-
-func (f RuleFlags) parsePath(value string) (string, app.ParameterLevel, error) {
-	if !validPathRegexp.MatchString(value) {
-		return "", app.ParameterLevelStrict, fmt.Errorf("invalid `path` format")
-	}
-
-	if strings.HasSuffix(value, "/**/*") {
-		return value[:len(value)-4], app.ParameterLevelAll, nil
-	}
-
-	if strings.HasSuffix(value, "/*") {
-		return value[:len(value)-1], app.ParameterLevelUnder, nil
-	}
-
-	return value, app.ParameterLevelStrict, nil
 }
 
 func (f RuleFlags) checkOptionsCombinations(t app.DestinationType, opts map[string]string) error {
