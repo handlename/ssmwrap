@@ -56,19 +56,19 @@ func (c *ParameterStore) Store(ctx context.Context, rules []ParameterRule) error
 	}
 
 	if p, err := c.conn.fetchParametersByNames(ctx, c.client, paths[ParameterLevelStrict]); err != nil {
-		return fmt.Errorf("failed to fetch parameters from SSM by strict paths %v: %w", paths[0], err)
+		return fmt.Errorf("failed to fetch parameters from SSM by strict paths %v: %w", paths[ParameterLevelStrict], err)
 	} else {
 		add(p)
 	}
 
 	if p, err := c.conn.fetchParametersByPaths(ctx, c.client, paths[ParameterLevelUnder], false); err != nil {
-		return fmt.Errorf("failed to fetch parameters from SSM by just under paths %v: %w", paths, err)
+		return fmt.Errorf("failed to fetch parameters from SSM by just under paths %v: %w", paths[ParameterLevelUnder], err)
 	} else {
 		add(p)
 	}
 
 	if p, err := c.conn.fetchParametersByPaths(ctx, c.client, paths[ParameterLevelAll], true); err != nil {
-		return fmt.Errorf("failed to fetch parameters from SSM by under paths recursively %v: %w", paths, err)
+		return fmt.Errorf("failed to fetch parameters from SSM by under paths recursively %v: %w", paths[ParameterLevelAll], err)
 	} else {
 		add(p)
 	}
