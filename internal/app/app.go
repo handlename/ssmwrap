@@ -28,6 +28,23 @@ func NewSSMWrap() *SSMWrap {
 }
 
 func (s *SSMWrap) Run(ctx context.Context, rules []Rule, command []string) error {
+	if len(command) == 0 {
+		return fmt.Errorf("command required")
+	}
+
+	if err := s.Export(ctx, rules); err != nil {
+		return fmt.Errorf("failed to export parameters: %w", err)
+	}
+
+	bin, err := exec.LookPath(command[0])
+	if err != nil {
+		return fmt.Errorf("command is not executable %s: %w", command[0], err)
+	}
+
+	return syscall.Exec(bin, command, os.Environ())
+}
+
+func (s SSMWrap) Export(ctx context.Context, rules []Rule) error {
 	slog.DebugContext(ctx, fmt.Sprintf("start to process %d rules", len(rules)))
 
 	ssmClient, err := s.ssmClient(ctx)
@@ -58,20 +75,7 @@ func (s *SSMWrap) Run(ctx context.Context, rules []Rule, command []string) error
 		}
 	}
 
-	slog.DebugContext(ctx, fmt.Sprintf("%d rules processed successfully", len(rules)))
-
-	// execute command
-
-	if len(command) == 0 {
-		return fmt.Errorf("command required")
-	}
-
-	bin, err := exec.LookPath(command[0])
-	if err != nil {
-		return fmt.Errorf("command is not executable %s: %w", command[0], err)
-	}
-
-	return syscall.Exec(bin, command, os.Environ())
+	return nil
 }
 
 func (s SSMWrap) ssmClient(ctx context.Context) (*ssm.Client, error) {
