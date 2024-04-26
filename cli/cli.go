@@ -143,50 +143,37 @@ func Run(version string, flagEnvPrefix string) ExitStatus {
 		return ExitStatusOK
 	}
 
-	options := ssmwrap.RunOptions{
-		Recursive: flags.Recursive,
-		Retries:   flags.Retries,
-		Command:   restArgs,
+	command := restArgs
+	if (0 < len(command)) && (command[0] == "--") {
+		command = command[1:]
 	}
-	if len(options.Command) == 0 {
+	if len(command) == 0 {
 		fmt.Fprintln(os.Stderr, "command required in arguments")
 		return ExitStatusError
 	}
 
-	if flags.Paths != "" {
-		options.Paths = strings.Split(flags.Paths, ",")
-	}
-	if flags.Names != "" {
-		options.Names = strings.Split(flags.Names, ",")
-	}
-
-	ssm := ssmwrap.DefaultSSMConnector{}
-	dests := []ssmwrap.Destination{}
-
-	if flags.EnvOutput {
-		dests = append(dests, ssmwrap.DestinationEnv{
-			Prefix:        flags.EnvPrefix,
-			UseEntirePath: flags.EnvUseEntirePath,
-		})
-	}
-
-	if 0 < len(flags.FileTargets) {
-		dests = append(dests, ssmwrap.DestinationFile{
-			Targets: flags.FileTargets,
-		})
-		for _, t := range flags.FileTargets {
-			options.Names = append(options.Names, t.Name)
-		}
+	rules := []app.Rule{}
+	rules = append(rules, flags.RuleFlags.Rules...)
+	rules = append(rules, flags.EnvFlags.Rules...)
+	rules = append(rules, flags.FileFlags.Rules...)
+	if len(rules) == 0 {
+		fmt.Fprintf(os.Stderr, "At least one rule required\n")
+		return ExitStatusError
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT)
 	defer stop()
 
-	if err := ssmwrap.Run(ctx, options, ssm, dests); err != nil {
+	sw := app.NewSSMWrap()
+	if flags.Retries != 0 {
+		sw.Retries = flags.Retries
+	}
+
+	if err := sw.Run(ctx, rules, command); err != nil {
 		if errors.Is(err, context.Canceled) {
 			fmt.Fprintf(os.Stderr, "Interrupted\n")
 		} else {
-			fmt.Fprintf(os.Stderr, "Erorr occurred: %s", err)
+			fmt.Fprintf(os.Stderr, "Error occurred: %s\n", err)
 		}
 
 		return ExitStatusError
