@@ -71,7 +71,7 @@ func parseFlags(args []string, flagEnvPrefix string) (*Flags, []string, error) {
 	fs.IntVar(&flags.Retries, "retries", 0, "Number of times of retry. Default is 0")
 	fs.Var(&flags.RuleFlags, "rule", strings.Join([]string{
 		"Set rule for exporting values. multiple flags are allowed.",
-		"format: path=...,type={env,file},to=...[,entirepath={true,false}][,prefix=...][,mode=...][,gid=...][,uid=...]",
+		"format: path=...,type={env,file}[,to=...][,entirepath={true,false}][,prefix=...][,mode=...][,gid=...][,uid=...]",
 		"parameters:",
 		"        path: [required]",
 		"              Path of parameter store.",
