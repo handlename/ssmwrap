@@ -86,7 +86,7 @@ func parseFlags(args []string, flagEnvPrefix string) (*Flags, []string, error) {
 		"              If `type=env`, but `to` is not set, `path` will be used as name of exported environment variable.",
 		"              If `type=file`, `to` is path of file to write.",
 		"  entirepath: [optional, only for `type=env`]",
-		"              Export entire path as environment variable.",
+		"              Export entire path as environment variables name.",
 		"              If `entirepath=true`, all values under the path will be exported. (/path/to/param -> PATH_TO_PARAM)",
 		"              If `entirepath=false`, only top level values under the path will be exported. (/path/to/param -> PARAM)",
 		"      prefix: [optional, only for `type=env`]",
