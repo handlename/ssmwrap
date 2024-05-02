@@ -1,5 +1,14 @@
 # Changelog
 
+## [v2.0.0](https://github.com/handlename/ssmwrap/compare/v1.2.2...v2.0.0) - 2024-05-02
+- migrate to aws-sdk-go-v2 by @handlename in https://github.com/handlename/ssmwrap/pull/61
+- test parsing flags by @handlename in https://github.com/handlename/ssmwrap/pull/63
+- io/ioutil is deprecated by @handlename in https://github.com/handlename/ssmwrap/pull/67
+- Handle SIGINT by @handlename in https://github.com/handlename/ssmwrap/pull/68
+- Group dependabot PRs by @handlename in https://github.com/handlename/ssmwrap/pull/69
+- Reorganize flags by @handlename in https://github.com/handlename/ssmwrap/pull/70
+- Sort parameters on test by @handlename in https://github.com/handlename/ssmwrap/pull/73
+
 ## [v1.2.1](https://github.com/handlename/ssmwrap/compare/v1.2.1...v1.2.1) - 2024-03-22
 
 ## 1.2.0 (2022-03-03)
