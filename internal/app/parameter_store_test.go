@@ -135,6 +135,14 @@ func TestParameterStoreRetrieve(t *testing.T) {
 		t.Run(tt.title, func(t *testing.T) {
 			got, _ := store.Retrieve(tt.path, tt.level)
 
+			sort.Slice(got, func(i, j int) bool {
+				return got[i].Path < got[j].Path
+			})
+
+			sort.Slice(tt.want, func(i, j int) bool {
+				return tt.want[i].Path < tt.want[j].Path
+			})
+
 			if diff := cmp.Diff(got, tt.want); diff != "" {
 				t.Errorf("Retrieve() has diff:\n%s", diff)
 			}
