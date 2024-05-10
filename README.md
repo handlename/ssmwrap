@@ -166,7 +166,7 @@ Please check [example](./examples/lib/main.go).
 
 ## License
 
-see [LICENSE](https://github.com/handlename/ssmwrap/blob/main/LICENSE) file.
+see [LICENSE](https://github.com/handlename/ssmwrap?tab=MIT-1-ov-file#readme) file.
 
 ## Special Thanks
 
