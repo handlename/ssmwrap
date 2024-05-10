@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/handlename/ssmwrap/cli"
+	"github.com/handlename/ssmwrap/v2/cli"
 )
 
 var version string

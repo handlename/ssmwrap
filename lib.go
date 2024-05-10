@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/handlename/ssmwrap/internal/app"
+	"github.com/handlename/ssmwrap/v2/internal/app"
 )
 
 type ExportOptions struct {

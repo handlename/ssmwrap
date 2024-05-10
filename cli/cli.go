@@ -12,9 +12,9 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/handlename/ssmwrap"
-	"github.com/handlename/ssmwrap/internal/app"
-	"github.com/handlename/ssmwrap/internal/cli"
+	"github.com/handlename/ssmwrap/v2"
+	"github.com/handlename/ssmwrap/v2/internal/app"
+	"github.com/handlename/ssmwrap/v2/internal/cli"
 )
 
 type ExitStatus int
