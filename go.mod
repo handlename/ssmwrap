@@ -5,7 +5,7 @@ go 1.22
 require (
 	github.com/aws/aws-sdk-go-v2 v1.26.1
 	github.com/aws/aws-sdk-go-v2/config v1.27.12
-	github.com/aws/aws-sdk-go-v2/service/ssm v1.49.4
+	github.com/aws/aws-sdk-go-v2/service/ssm v1.50.1
 	github.com/google/go-cmp v0.6.0
 	github.com/samber/lo v1.39.0
 )
