@@ -1,5 +1,10 @@
 # Changelog
 
+## [v2.0.1](https://github.com/handlename/ssmwrap/compare/v2.0.0...v2.0.1) - 2024-05-10
+- go import path for v2 by @handlename in https://github.com/handlename/ssmwrap/pull/76
+- Update license URL to not depend on branch name by @handlename in https://github.com/handlename/ssmwrap/pull/78
+- chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.27.9 to 1.27.12 by @dependabot in https://github.com/handlename/ssmwrap/pull/75
+
 ## [v2.0.0](https://github.com/handlename/ssmwrap/compare/v1.2.2...v2.0.0) - 2024-05-02
 - migrate to aws-sdk-go-v2 by @handlename in https://github.com/handlename/ssmwrap/pull/61
 - test parsing flags by @handlename in https://github.com/handlename/ssmwrap/pull/63
