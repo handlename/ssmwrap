@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/handlename/ssmwrap/internal/app"
+	"github.com/handlename/ssmwrap/v2/internal/app"
 	"github.com/samber/lo"
 )
 

@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/handlename/ssmwrap/internal/app"
+	"github.com/handlename/ssmwrap/v2/internal/app"
 )
 
 func TestEnvFlagsSuccess(t *testing.T) {

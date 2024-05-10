@@ -1,4 +1,4 @@
-module github.com/handlename/ssmwrap
+module github.com/handlename/ssmwrap/v2
 
 go 1.22
 

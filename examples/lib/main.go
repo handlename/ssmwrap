@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/handlename/ssmwrap"
+	"github.com/handlename/ssmwrap/v2"
 )
 
 func main() {
