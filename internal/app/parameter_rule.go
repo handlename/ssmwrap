@@ -73,3 +73,38 @@ func (r ParameterRule) String() string {
 
 	return s
 }
+
+func (r1 ParameterRule) Equals(r2 ParameterRule) bool {
+	return r1.Path == r2.Path && r1.Level == r2.Level
+}
+
+func (r1 ParameterRule) IsCovers(r2 ParameterRule) bool {
+	if r1.Equals(r2) {
+		return true
+	}
+
+	switch r1.Level {
+	case ParameterLevelStrict:
+		return false
+	case ParameterLevelUnder:
+		if r2.Level == ParameterLevelAll {
+			return false
+		}
+
+		if strings.HasPrefix(r2.Path, r1.Path) {
+			// Is r2 just unedr r1?
+			s := strings.Replace(r2.Path, r1.Path, "", 1)
+			if strings.Contains(s, "/") {
+				return false
+			}
+
+			return true
+		}
+	case ParameterLevelAll:
+		if strings.HasPrefix(r2.Path, r1.Path) {
+			return true
+		}
+	}
+
+	return false
+}

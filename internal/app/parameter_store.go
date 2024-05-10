@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"sort"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
@@ -33,7 +34,26 @@ func (c *ParameterStore) Store(ctx context.Context, rules []ParameterRule) error
 		ParameterLevelAll:    {},
 	}
 
+	// Rules that represent a broader range come first.
+	sort.Slice(rules, func(i, j int) bool {
+		if rules[i].Level == rules[j].Level {
+			return rules[i].Path < rules[j].Path
+		}
+
+		return rules[i].Level > rules[j].Level
+	})
+
+	filteredRules := []ParameterRule{}
+
 	for _, rule := range rules {
+		// Skip paths that have already been retrieved
+		if lo.ContainsBy(filteredRules, func(r ParameterRule) bool {
+			return r.IsCovers(rule)
+		}) {
+			slog.Debug("skip to fetch parameters due to overlapping", slog.String("rule", rule.String()))
+			continue
+		}
+
 		switch rule.Level {
 		case ParameterLevelStrict:
 			paths[ParameterLevelStrict] = append(paths[ParameterLevelStrict], rule.Path)
@@ -44,6 +64,8 @@ func (c *ParameterStore) Store(ctx context.Context, rules []ParameterRule) error
 		default:
 			slog.Warn("invalid ParameterRule path level", slog.Int("level", int(rule.Level)))
 		}
+
+		filteredRules = append(filteredRules, rule)
 	}
 
 	add := func(params map[string]string) {
