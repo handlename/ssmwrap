@@ -5,14 +5,21 @@ import (
 	"log/slog"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/lmittmann/tint"
+	"github.com/mattn/go-isatty"
 )
 
 func InitLogger() {
-	opts := slog.HandlerOptions{
-		AddSource: true,
-		Level:     selectLogLevel(),
-	}
-	logger := slog.New(slog.NewTextHandler(os.Stderr, &opts))
+	logger := slog.New(
+		tint.NewHandler(os.Stderr, &tint.Options{
+			AddSource:  true,
+			Level:      selectLogLevel(),
+			TimeFormat: time.DateTime,
+			NoColor:    !(isatty.IsTerminal(os.Stderr.Fd()) || isatty.IsCygwinTerminal(os.Stderr.Fd())),
+		}),
+	)
 	slog.SetDefault(logger)
 }
 
