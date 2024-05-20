@@ -1,5 +1,11 @@
 # Changelog
 
+## [v2.1.0](https://github.com/handlename/ssmwrap/compare/v2.0.1...v2.1.0) - 2024-05-20
+- Skip overlapped rules by @handlename in https://github.com/handlename/ssmwrap/pull/79
+- Replace slog handler by @handlename in https://github.com/handlename/ssmwrap/pull/81
+- Release by goreleaser by @handlename in https://github.com/handlename/ssmwrap/pull/82
+- Update README: how to install v2 by @handlename in https://github.com/handlename/ssmwrap/pull/83
+
 ## [v2.0.1](https://github.com/handlename/ssmwrap/compare/v2.0.0...v2.0.1) - 2024-05-10
 - go import path for v2 by @handlename in https://github.com/handlename/ssmwrap/pull/76
 - Update license URL to not depend on branch name by @handlename in https://github.com/handlename/ssmwrap/pull/78
