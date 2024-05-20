@@ -39,4 +39,4 @@
 [tagpr]
 	vPrefix = true
 	releaseBranch = v2
-	versionFile = VERSION
+	versionFile = cmd/ssmwrap/main.go
