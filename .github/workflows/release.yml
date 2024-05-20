@@ -16,14 +16,11 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: '^1.22.0'
-      - name: download tools
-        run: |
-          mkdir -p ~/bin
-          curl -sL https://github.com/Songmu/goxz/releases/download/v0.6.0/goxz_v0.6.0_linux_amd64.tar.gz | tar zxvf - && install goxz_v0.6.0_linux_amd64/goxz ~/bin/
-          curl -sL https://github.com/tcnksm/ghr/releases/download/v0.13.0/ghr_v0.13.0_linux_amd64.tar.gz | tar zxvf - && install ghr_v0.13.0_linux_amd64/ghr ~/bin/
-      - name: release binary
-        run: |
-          PATH=~/bin:$PATH make upload
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          version: latest
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: release docker image
