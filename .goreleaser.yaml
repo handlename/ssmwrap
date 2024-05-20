@@ -1,0 +1,6 @@
+version: 1
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    main: ./cmd/ssmwrap
