@@ -1,4 +1,4 @@
-VERSION=$(shell git describe --tags --always --dirty="-dev)
+VERSION=$(shell git describe --tags --always --dirty="-dev")
 PROJECT_USERNAME=handlename
 PROJECT_REPONAME=ssmwrap
 DIST_DIR=dist
