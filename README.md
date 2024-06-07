@@ -31,7 +31,7 @@ $ brew install handlename/tap/ssmwrap
 or
 
 ```console
-$ go install github.com/handlename/ssmwrap/cmd/ssmwrap/v2@latest
+$ go install github.com/handlename/ssmwrap/v2/cmd/ssmwrap@latest
 ```
 
 ## Options
