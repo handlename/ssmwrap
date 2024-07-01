@@ -1,6 +1,6 @@
 # Changelog
 
-## [v2.1.1](https://github.com/handlename/ssmwrap/compare/v2.1.0...v2.1.1) - 2024-07-01
+## [v2.2.0](https://github.com/handlename/ssmwrap/compare/v2.1.0...v2.2.0) - 2024-07-01
 - Fix install command in README by @handlename in https://github.com/handlename/ssmwrap/pull/87
 - chore(deps): bump github.com/aws/aws-sdk-go-v2/service/ssm from 1.49.4 to 1.52.1 by @dependabot in https://github.com/handlename/ssmwrap/pull/89
 - chore(deps): bump github.com/aws/aws-sdk-go-v2 from 1.26.1 to 1.30.1 by @dependabot in https://github.com/handlename/ssmwrap/pull/90
