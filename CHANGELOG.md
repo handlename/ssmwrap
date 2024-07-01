@@ -1,5 +1,12 @@
 # Changelog
 
+## [v2.1.1](https://github.com/handlename/ssmwrap/compare/v2.1.0...v2.1.1) - 2024-07-01
+- Fix install command in README by @handlename in https://github.com/handlename/ssmwrap/pull/87
+- chore(deps): bump github.com/aws/aws-sdk-go-v2/service/ssm from 1.49.4 to 1.52.1 by @dependabot in https://github.com/handlename/ssmwrap/pull/89
+- chore(deps): bump github.com/aws/aws-sdk-go-v2 from 1.26.1 to 1.30.1 by @dependabot in https://github.com/handlename/ssmwrap/pull/90
+- chore(deps): bump github.com/samber/lo from 1.39.0 to 1.44.0 by @dependabot in https://github.com/handlename/ssmwrap/pull/91
+- chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.27.12 to 1.27.23 by @dependabot in https://github.com/handlename/ssmwrap/pull/92
+
 ## [v2.1.0](https://github.com/handlename/ssmwrap/compare/v2.0.1...v2.1.0) - 2024-05-20
 - Skip overlapped rules by @handlename in https://github.com/handlename/ssmwrap/pull/79
 - Replace slog handler by @handlename in https://github.com/handlename/ssmwrap/pull/81
