@@ -9,7 +9,7 @@ require (
 	github.com/google/go-cmp v0.6.0
 	github.com/lmittmann/tint v1.0.4
 	github.com/mattn/go-isatty v0.0.20
-	github.com/samber/lo v1.39.0
+	github.com/samber/lo v1.44.0
 )
 
 require (
@@ -25,6 +25,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sts v1.28.7 // indirect
 	github.com/aws/smithy-go v1.20.2 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
-	golang.org/x/exp v0.0.0-20240409090435-93d18d7e34b8 // indirect
 	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/text v0.16.0 // indirect
 )
