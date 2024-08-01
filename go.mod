@@ -3,7 +3,7 @@ module github.com/handlename/ssmwrap/v2
 go 1.22
 
 require (
-	github.com/aws/aws-sdk-go-v2 v1.30.1
+	github.com/aws/aws-sdk-go-v2 v1.30.3
 	github.com/aws/aws-sdk-go-v2/config v1.27.23
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.52.1
 	github.com/google/go-cmp v0.6.0
