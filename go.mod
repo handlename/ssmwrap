@@ -9,7 +9,7 @@ require (
 	github.com/google/go-cmp v0.6.0
 	github.com/lmittmann/tint v1.0.4
 	github.com/mattn/go-isatty v0.0.20
-	github.com/samber/lo v1.44.0
+	github.com/samber/lo v1.46.0
 )
 
 require (
