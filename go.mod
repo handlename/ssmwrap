@@ -9,6 +9,7 @@ require (
 	github.com/google/go-cmp v0.6.0
 	github.com/lmittmann/tint v1.0.5
 	github.com/mattn/go-isatty v0.0.20
+	github.com/pkg/errors v0.9.1
 	github.com/samber/lo v1.47.0
 )
 
@@ -25,7 +26,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/sts v1.30.1 // indirect
 	github.com/aws/smithy-go v1.21.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 )
