@@ -1,5 +1,8 @@
 # Changelog
 
+## [v2.2.2](https://github.com/handlename/ssmwrap/compare/v2.2.1...v2.2.2) - 2025-03-29
+- Fix: docker image build by @handlename in https://github.com/handlename/ssmwrap/pull/109
+
 ## [v2.2.1](https://github.com/handlename/ssmwrap/compare/v2.2.0...v2.2.1) - 2025-03-29
 - Bump up go1.24 due to CVE-2024-24791 by @comi91262 in https://github.com/handlename/ssmwrap/pull/105
 - chore(deps): bump github.com/lmittmann/tint from 1.0.4 to 1.0.5 by @dependabot in https://github.com/handlename/ssmwrap/pull/97
