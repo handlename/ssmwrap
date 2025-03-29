@@ -59,7 +59,6 @@ func (f RuleFlags) parseValue(value string) (map[string]string, error) {
 }
 
 func (f RuleFlags) buildRule(opts map[string]string) (*app.Rule, error) {
-
 	rule := &app.Rule{}
 
 	if _, ok := opts["path"]; !ok {
