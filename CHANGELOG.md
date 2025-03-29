@@ -1,5 +1,15 @@
 # Changelog
 
+## [v2.2.1](https://github.com/handlename/ssmwrap/compare/v2.2.0...v2.2.1) - 2025-03-29
+- Bump up go1.24 due to CVE-2024-24791 by @comi91262 in https://github.com/handlename/ssmwrap/pull/105
+- chore(deps): bump github.com/lmittmann/tint from 1.0.4 to 1.0.5 by @dependabot in https://github.com/handlename/ssmwrap/pull/97
+- chore(deps): bump github.com/samber/lo from 1.44.0 to 1.47.0 by @dependabot in https://github.com/handlename/ssmwrap/pull/100
+- chore(deps): bump github.com/aws/aws-sdk-go-v2/service/ssm from 1.52.1 to 1.54.3 by @dependabot in https://github.com/handlename/ssmwrap/pull/102
+- chore(deps): bump github.com/aws/aws-sdk-go-v2 from 1.30.1 to 1.31.0 by @dependabot in https://github.com/handlename/ssmwrap/pull/103
+- Fix build error: non-consistant format string in call to fmt.Errorf by @handlename in https://github.com/handlename/ssmwrap/pull/107
+- Update and pin actions by @handlename in https://github.com/handlename/ssmwrap/pull/108
+- chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.27.23 to 1.27.39 by @dependabot in https://github.com/handlename/ssmwrap/pull/104
+
 ## [v2.2.0](https://github.com/handlename/ssmwrap/compare/v2.1.0...v2.2.0) - 2024-07-01
 - Fix install command in README by @handlename in https://github.com/handlename/ssmwrap/pull/87
 - chore(deps): bump github.com/aws/aws-sdk-go-v2/service/ssm from 1.49.4 to 1.52.1 by @dependabot in https://github.com/handlename/ssmwrap/pull/89
