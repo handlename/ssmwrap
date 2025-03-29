@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/handlename/ssmwrap/v2/internal/app"
+	"github.com/pkg/errors"
 	"github.com/samber/lo"
 )
 
@@ -66,7 +67,7 @@ func (f RuleFlags) buildRule(opts map[string]string) (*app.Rule, error) {
 	}
 
 	if pr, err := app.NewParameterRule(opts["path"]); err != nil {
-		return nil, fmt.Errorf(err.Error())
+		return nil, errors.Wrap(err, "failed to init parameter rule")
 	} else {
 		rule.ParameterRule = *pr
 	}
@@ -74,7 +75,7 @@ func (f RuleFlags) buildRule(opts map[string]string) (*app.Rule, error) {
 	switch opts["type"] {
 	case string(app.DestinationTypeEnv):
 		if err := f.checkOptionsCombinations(app.DestinationTypeEnv, opts); err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "invalid options combination(s)")
 		}
 
 		rule.DestinationRule = app.DestinationRule{
@@ -97,7 +98,7 @@ func (f RuleFlags) buildRule(opts map[string]string) (*app.Rule, error) {
 		}
 	case string(app.DestinationTypeFile):
 		if err := f.checkOptionsCombinations(app.DestinationTypeFile, opts); err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "invalid options combination(s)")
 		}
 
 		if _, ok := opts["to"]; !ok {
