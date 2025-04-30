@@ -5,7 +5,7 @@ go 1.24
 require (
 	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/config v1.29.12
-	github.com/aws/aws-sdk-go-v2/service/ssm v1.54.3
+	github.com/aws/aws-sdk-go-v2/service/ssm v1.59.0
 	github.com/google/go-cmp v0.7.0
 	github.com/lmittmann/tint v1.0.5
 	github.com/mattn/go-isatty v0.0.20
@@ -25,7 +25,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.30.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.33.17 // indirect
 	github.com/aws/smithy-go v1.22.2 // indirect
-	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
 )
