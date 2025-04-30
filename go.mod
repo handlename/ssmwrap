@@ -10,7 +10,7 @@ require (
 	github.com/lmittmann/tint v1.0.5
 	github.com/mattn/go-isatty v0.0.20
 	github.com/pkg/errors v0.9.1
-	github.com/samber/lo v1.47.0
+	github.com/samber/lo v1.50.0
 )
 
 require (
@@ -27,5 +27,5 @@ require (
 	github.com/aws/smithy-go v1.22.2 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
-	golang.org/x/text v0.16.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 )
