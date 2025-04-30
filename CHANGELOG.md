@@ -1,6 +1,6 @@
 # Changelog
 
-## [v2.3.0](https://github.com/handlename/ssmwrap/compare/v2.2.2...v2.3.0) - 2025-04-30
+## [v2.2.3](https://github.com/handlename/ssmwrap/compare/v2.2.2...v2.2.3) - 2025-04-30
 - use the latest patch version of Go by @fujiwara in https://github.com/handlename/ssmwrap/pull/115
 - chore(deps): bump github.com/google/go-cmp from 0.6.0 to 0.7.0 by @dependabot in https://github.com/handlename/ssmwrap/pull/111
 - chore(deps): bump github.com/samber/lo from 1.47.0 to 1.49.1 by @dependabot in https://github.com/handlename/ssmwrap/pull/112
