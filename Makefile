@@ -11,6 +11,9 @@ cmd/ssmwrap/ssmwrap: *.go */**/*.go
 test:
 	go test -v ./...
 
+test/integrated:
+	go test -v -tags=integrated -run '^TestIntegrated' ./...
+
 .PHONY: build-docker-image
 build-docker-image:
 	docker build \
