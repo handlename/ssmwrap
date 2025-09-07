@@ -6,7 +6,7 @@ import (
 	"github.com/handlename/ssmwrap/v2/cli"
 )
 
-const version = "2.2.3"
+const version = "2.2.4"
 
 const FlagEnvPrefix = "SSMWRAP_"
 
