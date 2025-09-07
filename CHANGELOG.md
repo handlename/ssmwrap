@@ -1,6 +1,6 @@
 # Changelog
 
-## [v2.3.0](https://github.com/handlename/ssmwrap/compare/v2.2.3...v2.3.0) - 2025-09-07
+## [v2.2.4](https://github.com/handlename/ssmwrap/compare/v2.2.3...v2.2.4) - 2025-09-07
 - Added integration test by @handlename in https://github.com/handlename/ssmwrap/pull/118
 - chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.29.12 to 1.29.14 by @dependabot[bot] in https://github.com/handlename/ssmwrap/pull/117
 - goreleaser conf v2 by @handlename in https://github.com/handlename/ssmwrap/pull/120
