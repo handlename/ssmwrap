@@ -1,5 +1,17 @@
 # Changelog
 
+## [v2.3.0](https://github.com/handlename/ssmwrap/compare/v2.2.3...v2.3.0) - 2025-09-07
+- Added integration test by @handlename in https://github.com/handlename/ssmwrap/pull/118
+- chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.29.12 to 1.29.14 by @dependabot[bot] in https://github.com/handlename/ssmwrap/pull/117
+- goreleaser conf v2 by @handlename in https://github.com/handlename/ssmwrap/pull/120
+- Enable draft release by @handlename in https://github.com/handlename/ssmwrap/pull/134
+- chore: Configure Renovate by @renovate[bot] in https://github.com/handlename/ssmwrap/pull/135
+- Stop dependabot by @handlename in https://github.com/handlename/ssmwrap/pull/139
+- chore(deps): bump github.com/samber/lo from 1.50.0 to 1.51.0 by @dependabot[bot] in https://github.com/handlename/ssmwrap/pull/122
+- chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.29.14 to 1.31.6 by @dependabot[bot] in https://github.com/handlename/ssmwrap/pull/133
+- chore(deps): update actions/checkout action to v4.3.0 by @renovate[bot] in https://github.com/handlename/ssmwrap/pull/136
+- chore(deps): update actions/setup-go action to v5.5.0 by @renovate[bot] in https://github.com/handlename/ssmwrap/pull/137
+
 ## [v2.2.3](https://github.com/handlename/ssmwrap/compare/v2.2.2...v2.2.3) - 2025-04-30
 - use the latest patch version of Go by @fujiwara in https://github.com/handlename/ssmwrap/pull/115
 - chore(deps): bump github.com/google/go-cmp from 0.6.0 to 0.7.0 by @dependabot in https://github.com/handlename/ssmwrap/pull/111
