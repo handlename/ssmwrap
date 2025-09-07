@@ -38,5 +38,6 @@
 #
 [tagpr]
 	vPrefix = true
+	release = draft
 	releaseBranch = v2
 	versionFile = cmd/ssmwrap/main.go
