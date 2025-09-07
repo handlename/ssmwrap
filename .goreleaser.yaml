@@ -4,3 +4,5 @@ builds:
   - env:
       - CGO_ENABLED=0
     main: ./cmd/ssmwrap
+release:
+  use_existing_draft: true
