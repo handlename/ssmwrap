@@ -1,5 +1,15 @@
 # Changelog
 
+## [v2.2.5](https://github.com/handlename/ssmwrap/compare/v2.2.4...v2.2.5) - 2025-09-14
+- chore(deps): update dependency go to 1.25 by @renovate[bot] in https://github.com/handlename/ssmwrap/pull/140
+- chore(deps): update goreleaser/goreleaser-action action to v6.4.0 by @renovate[bot] in https://github.com/handlename/ssmwrap/pull/141
+- chore(deps): update songmu/tagpr action to v1.9.0 by @renovate[bot] in https://github.com/handlename/ssmwrap/pull/142
+- fix(deps): update aws-sdk-go-v2 monorepo by @renovate[bot] in https://github.com/handlename/ssmwrap/pull/143
+- fix(deps): update module github.com/lmittmann/tint to v1.1.2 by @renovate[bot] in https://github.com/handlename/ssmwrap/pull/144
+- fix(deps): update module github.com/stretchr/testify to v1.11.1 by @renovate[bot] in https://github.com/handlename/ssmwrap/pull/145
+- chore(deps): update actions/checkout action to v5 by @renovate[bot] in https://github.com/handlename/ssmwrap/pull/146
+- chore(deps): update actions/setup-go action to v6 by @renovate[bot] in https://github.com/handlename/ssmwrap/pull/147
+
 ## [v2.2.4](https://github.com/handlename/ssmwrap/compare/v2.2.3...v2.2.4) - 2025-09-07
 - Added integration test by @handlename in https://github.com/handlename/ssmwrap/pull/118
 - chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.29.12 to 1.29.14 by @dependabot[bot] in https://github.com/handlename/ssmwrap/pull/117
