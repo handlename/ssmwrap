@@ -1,5 +1,12 @@
 # Changelog
 
+## [v2.2.6](https://github.com/handlename/ssmwrap/compare/v2.2.5...v2.2.6) - 2026-01-14
+- chore(deps): update actions/checkout action to v6 by @renovate[bot] in https://github.com/handlename/ssmwrap/pull/153
+- fix(deps): update module github.com/samber/lo to v1.52.0 by @renovate[bot] in https://github.com/handlename/ssmwrap/pull/150
+- fix(deps): update aws-sdk-go-v2 monorepo by @renovate[bot] in https://github.com/handlename/ssmwrap/pull/149
+- chore(deps): update actions/setup-go action to v6.2.0 by @renovate[bot] in https://github.com/handlename/ssmwrap/pull/152
+- chore(deps): update songmu/tagpr action to v1.11.1 by @renovate[bot] in https://github.com/handlename/ssmwrap/pull/154
+
 ## [v2.2.5](https://github.com/handlename/ssmwrap/compare/v2.2.4...v2.2.5) - 2025-09-14
 - chore(deps): update dependency go to 1.25 by @renovate[bot] in https://github.com/handlename/ssmwrap/pull/140
 - chore(deps): update goreleaser/goreleaser-action action to v6.4.0 by @renovate[bot] in https://github.com/handlename/ssmwrap/pull/141
