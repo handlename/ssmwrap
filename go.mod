@@ -7,7 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.32.7
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.67.8
 	github.com/google/go-cmp v0.7.0
-	github.com/lmittmann/tint v1.1.2
+	github.com/lmittmann/tint v1.2.0
 	github.com/mattn/go-isatty v0.0.20
 	github.com/pkg/errors v0.9.1
 	github.com/samber/lo v1.52.0
