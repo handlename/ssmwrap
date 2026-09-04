@@ -12,6 +12,6 @@ jobs:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           token: ${{ secrets.GH_PAT }}
-      - uses: Songmu/tagpr@fa7d23a4aada5ab0d15a76277a7e0b70d107a9c3 # v1.11.1
+      - uses: Songmu/tagpr@7ebae2dcc300132baa7cc9dd108c8923b07fc366 # v1.20.3
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
